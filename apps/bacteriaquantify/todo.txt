@@ -1,0 +1,1 @@
+https://github.com/fluttercandies/flutter_image_editor/blob/main/image_editor/example/lib/advanced_page.dart
