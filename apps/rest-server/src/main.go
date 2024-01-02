@@ -167,6 +167,7 @@ func main() {
 		API.Delete("/admin/users/{ID}", j.Serve, adminCont.DeleteUser)
 
 		API.Post("/histories", j.Serve, userCont.SaveHistory)
+		API.Get("/histories", j.Serve, userCont.GetHistories)
 
 	}
 
