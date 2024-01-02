@@ -1,0 +1,232 @@
+import 'package:flutter/material.dart';
+
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  final nameCtr = TextEditingController();
+  final usernameCtr = TextEditingController();
+  final passwordCtr = TextEditingController();
+
+  String selectedAuth = "Masuk";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/bg.png',
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/logo.png',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(width: 9),
+                  const Text(
+                    'Bacteria\nQuantify!',
+                    style: TextStyle(
+                        color: Color(0XFF4FA6CB),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const SizedBox(height: 54),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 13),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(37),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color(0X80000000),
+                        blurRadius: 14,
+                        offset: Offset(0, 4),
+                        spreadRadius: -3)
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildAuthType(),
+                    selectedAuth == 'Masuk'
+                        ? const SizedBox(height: 44)
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Sudah mendaftar? ',
+                                  style: TextStyle(fontSize: 9),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedAuth = 'Masuk';
+                                    });
+                                  },
+                                  child: const Text(
+                                    'Masuk',
+                                    style: TextStyle(
+                                        fontSize: 9, color: Color(0XFF4FA6CB)),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                    Visibility(
+                      visible: selectedAuth != 'Masuk',
+                      child: _buildTextField(controller: nameCtr, hint: 'Nama'),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTextField(controller: usernameCtr, hint: 'Username'),
+                    const SizedBox(height: 10),
+                    _buildTextField(
+                        controller: passwordCtr,
+                        hint: 'Password',
+                        inputType: TextInputType.visiblePassword,
+                        obscrueText: true),
+                    selectedAuth != 'Masuk'
+                        ? const SizedBox(height: 84)
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  'Belum mendaftar?',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                                Text(
+                                  ' / ',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                  ),
+                                ),
+                                Text(
+                                  'Lupa password?',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                          const Color(0XFF4FA6CB),
+                        ),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(19),
+                        )),
+                        padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              horizontal: 42, vertical: 8),
+                        ),
+                      ),
+                      child: Text(
+                          selectedAuth == 'Masuk' ? selectedAuth : 'Buat Akun'),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAuthType() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(80),
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0X40000000),
+              blurRadius: 16,
+              offset: Offset(0, 7),
+              spreadRadius: -10)
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildAuthTypeChoice(label: 'Masuk'),
+          _buildAuthTypeChoice(label: 'Daftar')
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAuthTypeChoice({required String label}) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            selectedAuth = label;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(80),
+              color: selectedAuth == label
+                  ? const Color(0XFF4FA6CB)
+                  : Colors.white),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selectedAuth != label
+                    ? const Color(0XFF4FA6CB)
+                    : Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      {required TextEditingController controller,
+      required String hint,
+      TextInputType inputType = TextInputType.name,
+      bool obscrueText = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscrueText,
+      keyboardType: inputType,
+      decoration:
+          InputDecoration(hintText: hint, border: const OutlineInputBorder()),
+    );
+  }
+}
