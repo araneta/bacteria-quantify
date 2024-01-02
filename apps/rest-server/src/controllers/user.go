@@ -256,3 +256,31 @@ func (c *UserController) SaveHistory(ctx iris.Context) {
 
 	ctx.JSON(respond)
 }
+
+func (c *UserController) GetHistories(ctx iris.Context) {
+	user := ctx.Values().Get("jwt").(*jwt.Token)
+
+	//ctx.Writef("This is an authenticated request\n")
+	//ctx.Writef("Claim content:\n")
+
+	payload := user.Claims.(jwt.MapClaims)
+	userID := int(payload["userID"].(float64))
+
+	localuser, errUser := c.ServiceProvider.UserSvc.Find(userID)
+	if errUser != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(errUser))
+
+		return
+	}
+
+	result, err := c.ServiceProvider.AppSvc.GetDispositions(incomingLetterID)
+	if err != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(err))
+
+		return
+	} else {
+		ctx.JSON(iris.Map{"status": "1", "message": result})
+	}
+}
