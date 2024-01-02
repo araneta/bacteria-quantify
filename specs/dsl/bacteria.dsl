@@ -11,9 +11,9 @@ timestamp? updatedAt;
 timestamp? deletedAt;
 	}
 	root History{
-		string SampleName {unique;}
 		User *User;
 		string localFileImage;
+		string sampleName {unique;}
 timestamp? createdAt;
 timestamp? updatedAt;
 timestamp? deletedAt;

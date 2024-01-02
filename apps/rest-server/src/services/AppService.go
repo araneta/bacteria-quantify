@@ -2,10 +2,9 @@ package services
 
 import (
 	"bacteriapp/core"
-	_ "bacteriapp/dto"
-
+	"bacteriapp/dto"
 	_ "bacteriapp/helpers"
-	_ "bacteriapp/model"
+	"bacteriapp/model"
 	"bacteriapp/query"
 	_ "bytes"
 	"context"
@@ -19,6 +18,8 @@ import (
 	_ "strconv"
 	_ "strings"
 	"time"
+
+	"github.com/jinzhu/copier"
 
 	_ "github.com/satori/go.uuid"
 )
@@ -43,12 +44,13 @@ func fmtDuration(elapsedTime time.Duration) string {
 }
 
 type AppService struct {
-	MailerSvc     *core.MailerService
-	UserSvc       *UserService
-	Config        *core.Config
-	TeloService   *TeloService
-	PohongService *PohongService
-	KejuService   *KejuService
+	MailerSvc      *core.MailerService
+	UserSvc        *UserService
+	Config         *core.Config
+	TeloService    *TeloService
+	PohongService  *PohongService
+	KejuService    *KejuService
+	HistoryService *KejuService
 }
 
 func (s *AppService) Init() {
@@ -64,4 +66,15 @@ func (s *AppService) Test() string {
 	}
 	return user.FullName + "OK"
 	//return "OK"
+}
+func (s *AppService) SaveHistory(UserID int, form *dto.HistoryEntryForm) (*model.History, error) {
+	var entity = new(model.History)
+	//set new fields
+	copier.Copy(entity, &form)
+	errCreate := query.History.Create(entity)
+	if errCreate != nil {
+		return nil, errCreate
+	}
+	return entity, nil
+
 }

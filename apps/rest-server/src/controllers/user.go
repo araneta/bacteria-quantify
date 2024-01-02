@@ -191,3 +191,68 @@ func (c *UserController) GetProfile(ctx iris.Context) {
 
 	ctx.JSON(respond)
 }
+
+func (c *UserController) SaveHistory(ctx iris.Context) {
+	user := ctx.Values().Get("jwt").(*jwt.Token)
+
+	//ctx.Writef("This is an authenticated request\n")
+	//ctx.Writef("Claim content:\n")
+
+	payload := user.Claims.(jwt.MapClaims)
+	userID := int(payload["userID"].(float64))
+
+	localuser, errUser := c.ServiceProvider.UserSvc.Find(userID)
+	if errUser != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(errUser))
+
+		return
+	}
+	var form dto.HistoryEntryForm
+
+	err := ctx.ReadBody(&form)
+	if err != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest,
+			iris.NewProblem().Title("Parser issue").Detail(err.Error()))
+		return
+	}
+	// upload single file
+	var respond CommonRespond2
+	respond.Status = 1
+	file, fileHeader, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+	defer file.Close()
+
+	uuid := uuid.NewV4().String()
+	// Upload the file to specific destination.
+	localFile := uuid + ".jpg"
+
+	dest := filepath.Join(c.UserImagesPath, localFile)
+	_, errsave := ctx.SaveFormFile(fileHeader, dest)
+	if errsave != nil {
+		//panic(err)
+		respond.Status = 0
+		respond.Message = errsave.Error()
+		ctx.JSON(respond)
+		return
+	}
+
+	respond.Status = 1
+	form.LocalFileImage = localFile
+	//save the image id / avatar
+	updatedUser, errUpdate := c.ServiceProvider.AppSvc.SaveHistory(int(localuser.ID), &form)
+
+	if errUpdate != nil {
+		respond.Status = 0
+		respond.Message = errUpdate.Error()
+		ctx.JSON(respond)
+		return
+	}
+
+	respond.Message = updatedUser
+
+	ctx.JSON(respond)
+}

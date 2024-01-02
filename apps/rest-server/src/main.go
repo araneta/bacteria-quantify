@@ -142,6 +142,7 @@ func main() {
 	userCont.ServiceProvider = svcProvider
 
 	adminCont.UserImagesPath = c.UserImagesPath
+	userCont.UserImagesPath = c.UserImagesPath
 
 	auth := app.Party("/auth")
 	{
@@ -164,6 +165,8 @@ func main() {
 		API.Put("/admin/users/{ID}", j.Serve, adminCont.UpdateUser)
 		API.Get("/admin/users/{ID}", j.Serve, adminCont.GetUser)
 		API.Delete("/admin/users/{ID}", j.Serve, adminCont.DeleteUser)
+
+		API.Post("/histories", j.Serve, userCont.SaveHistory)
 
 	}
 
