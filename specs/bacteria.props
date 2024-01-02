@@ -1,0 +1,5 @@
+dsl=./dsl
+postgres=localhost/bacteria?user=bacteria&password=willamette
+migration
+apply
+force

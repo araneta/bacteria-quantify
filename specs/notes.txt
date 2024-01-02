@@ -1,0 +1,27 @@
+java -jar dsl-clc.jar properties=bacteria.props
+'/media/aldo/data2/projects/aifruit/apps/tables-to-go-master/bin/tables-to-go' -v -t pg -h localhost -d mekavision -s mekavision -u postgres -p willamette -pn "entities" -of /media/aldo/data2/projects/aifruit/specs/generated
+
+to update dependecy:
+run ./run-laptop.sh  and fix all errors
+update src/Service/ServiceProvider.go
+update src/wire.go : tambah newMapper, newservice
+wire.Build(NewServiceProvider, NewDBAdapter, NewUserMapper,NewUserService, NewImageService, NewOrchardService);
+
+update src/di.go
+run: 
+cd /rest/src
+../bin/wire
+
+CREATE DATABASE mekavision;
+CREATE USER mekavision WITH ENCRYPTED PASSWORD '1gDGGsn3v84056l';
+GRANT ALL PRIVILEGES ON DATABASE mekavision to mekavision;
+
+psql -h localhost -p 5432 -U mekavision -d mekavision
+ALTER USER postgres PASSWORD 'cZ8dfASM529gGvdY';
+ALTER USER mekavision PASSWORD '1gDGGsn3v84056l';
+
+sudo ln -s /etc/nginx/sites-available/mekavision.aldoapp.com /etc/nginx/sites-enabled/mekavision.aldoapp.com
+sudo certbot --nginx -d mekavision.aldoapp.com
+
+change sudo nano /etc/nginx/nginx.conf
+user from wwdata to mekavision
