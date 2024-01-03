@@ -1,3 +1,4 @@
+import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -11,7 +12,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final nameCtr = TextEditingController();
   final usernameCtr = TextEditingController();
   final passwordCtr = TextEditingController();
-
+  bool isLoading = false;
   String selectedAuth = "Masuk";
 
   @override
@@ -136,7 +137,36 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                           ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        print('t1' + selectedAuth);
+                        if (selectedAuth == 'Daftar') {
+                          print('t2');
+                          if (nameCtr.text == "" ||
+                              usernameCtr.text == "" ||
+                              passwordCtr.text == "") {
+                            print('t3');
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Silahkan isi semua field"),
+                            ));
+                          } else {
+                            print('t4');
+                            register(nameCtr.text, usernameCtr.text,
+                                passwordCtr.text);
+                          }
+                        } else {
+                          print('t5');
+                          if (usernameCtr.text == "" ||
+                              passwordCtr.text == "") {
+                            print('t3');
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Silahkan isi semua field"),
+                            ));
+                          } else {
+                            print('t4');
+                            login(usernameCtr.text, passwordCtr.text);
+                          }
+                        }
+                      },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
                           const Color(0XFF4FA6CB),
@@ -228,5 +258,50 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration:
           InputDecoration(hintText: hint, border: const OutlineInputBorder()),
     );
+  }
+
+  register(String fullName, String email, String password) async {
+    print('register;');
+    setState(() {
+      isLoading = true;
+    });
+    var success =
+        await UserService(context: context).register(fullName, email, password);
+    setState(() {
+      isLoading = false;
+    });
+    if (success) {
+      setState(() {
+        selectedAuth = "Masuk";
+      });
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("user name or password is incorrect"),
+        ));
+      }
+    }
+  }
+
+  login(String email, String password) async {
+    print('login;');
+    setState(() {
+      isLoading = true;
+    });
+    var success = await UserService(context: context).login(email, password);
+    setState(() {
+      isLoading = false;
+    });
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("login bro"),
+      ));
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("user name or password is incorrect"),
+        ));
+      }
+    }
   }
 }
