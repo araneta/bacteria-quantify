@@ -1,5 +1,8 @@
 import 'package:bacteriaquantify/services/UserService.dart';
+import 'package:bacteriaquantify/style.dart';
 import 'package:flutter/material.dart';
+
+import 'ForgotPassword.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -77,7 +80,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               children: [
                                 const Text(
                                   'Sudah mendaftar? ',
-                                  style: TextStyle(fontSize: 9),
+                                  style: TextStyle(fontSize: fontSizeNormal),
                                 ),
                                 InkWell(
                                   onTap: () {
@@ -88,7 +91,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: const Text(
                                     'Masuk',
                                     style: TextStyle(
-                                        fontSize: 9, color: Color(0XFF4FA6CB)),
+                                        fontSize: fontSizeNormal,
+                                        color: Color(0XFF4FA6CB)),
                                   ),
                                 )
                               ],
@@ -112,25 +116,35 @@ class _AuthScreenState extends State<AuthScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
                                   'Belum mendaftar?',
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: fontSizeNormal,
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
                                 Text(
                                   ' / ',
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: fontSizeNormal,
                                   ),
                                 ),
-                                Text(
-                                  'Lupa password?',
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    decoration: TextDecoration.underline,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ForgotPassword()),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Lupa password?',
+                                    style: TextStyle(
+                                      fontSize: fontSizeNormal,
+                                      decoration: TextDecoration.underline,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -236,7 +250,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 color: selectedAuth != label
                     ? const Color(0XFF4FA6CB)
                     : Colors.white,
-                fontSize: 15,
+                fontSize: fontSizeHeading1,
                 fontWeight: FontWeight.w600,
               ),
             ),

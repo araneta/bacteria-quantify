@@ -13,6 +13,49 @@ class UserService {
 
   const UserService({required this.context});
 
+  resetPassword(String email) async {
+    Map data = {
+      'email': email,
+    };
+    var jsonData = null;
+    var success = false;
+    var url = Config.API_HOST;
+    print(jsonEncode(data));
+    var response = await http.post(
+      Uri.parse("$url/api/reset-password"),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(data),
+    );
+    print(response);
+
+    if (response.statusCode == 200) {
+      jsonData = json.decode(response.body);
+      print(response.body);
+      if (jsonData != null) {
+        if (jsonData['status'] == 1) {
+          success = true;
+        } else {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(jsonData['message']),
+            ));
+          }
+        }
+      }
+    } else {
+      print('error sending;');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "Response status: ${response.statusCode}, Response body: ${response.body}"),
+        ));
+      }
+    }
+    return success;
+  }
+
   register(String fullName, String email, String password) async {
     Map data = {
       'fullName': fullName,
