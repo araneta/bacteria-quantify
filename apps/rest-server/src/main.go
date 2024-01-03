@@ -151,6 +151,7 @@ func main() {
 	}
 	API := app.Party("/api")
 	{
+		API.Post("/register", adminCont.AddUser)
 		//admin---------------
 		API.Get("/install", adminCont.Install)
 

@@ -78,3 +78,12 @@ func (s *AppService) SaveHistory(UserID int, form *dto.HistoryEntryForm) (*model
 	return entity, nil
 
 }
+func (s *AppService) GetHistories(UserID int) ([]*model.History, error) {
+	u := query.History
+	entities, err := query.History.Where(u.UserID.Eq(int32(UserID))).Find()
+	if err != nil {
+		fmt.Printf("GetHistories err\n")
+		return nil, err
+	}
+	return entities, nil
+}

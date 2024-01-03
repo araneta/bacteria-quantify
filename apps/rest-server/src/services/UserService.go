@@ -65,8 +65,8 @@ func (s *UserService) OperatorLogin(usernamex, password, IPAddress string) (*mod
 func (s *UserService) SearchUsers(paging *common.Paging) (*common.PagingResult, error) {
 	return s.Mapper.SearchUsers(paging)
 }
-func (s *UserService) CreateUser(fullName, email, mobileNo, password string, roleID int) (*model.User, error) {
-
+func (s *UserService) CreateUser(fullName, email, mobileNo, password string) (*model.User, error) {
+	fmt.Printf("ok: %v\n", "CreateUser")
 	//find existing user with email
 	user, err := s.FindByEmail(email)
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *UserService) CreateUser(fullName, email, mobileNo, password string, rol
 	user2 := model.User{FullName: fullName,
 		Email: email, Password: hashPass,
 	}
-
+	fmt.Printf("ok: %v\n", user2)
 	newUser, errNew := s.Mapper.Create(&user2)
 	//remove passh hash
 	if errNew == nil {

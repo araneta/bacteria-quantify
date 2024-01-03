@@ -2,13 +2,22 @@ Port: 8080
 # UserImagesPath: /media/aldo/49909430-d2bd-4bcf-be1d-3c425a4013bf/apps/projects/aifruit/apps/userImages
 UserImagesPath: /home/aldo/projects/disposisi
 
-#database
-DBHost: localhost
-DBPort: 5432
-DBUsername: bacteria
-DBPassword: willamette
-DBName: bacteria
-DBSchema: bacteria
+
+Databases:
+- DBHost: localhost
+  DBPort: 5432
+  DBUsername: bacteria
+  DBPassword: willamette
+  DBName: bacteria
+  DBSchema: bacteria
+- DBHost: localhost
+  DBPort: 5432
+  DBUsername: dsadas
+  DBPassword: dasdas
+  DBName: test
+  DBSchema: 
+
+
 TimeZone: Asia/Jakarta
 
 SMTPHost: smtp-relay.sendinblue.com

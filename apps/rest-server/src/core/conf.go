@@ -9,17 +9,21 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
-	Port           string `yaml:"Port"`
-	UserImagesPath string `yaml:"UserImagesPath"`
-	PublicURL      string `yaml:"PublicURL"`
-
+type DB struct{
 	DBHost     string `yaml:"DBHost"`
 	DBPort     int    `yaml:"DBPort"`
 	DBUsername string `yaml:"DBUsername"`
 	DBPassword string `yaml:"DBPassword"`
 	DBName     string `yaml:"DBName"`
 	DBSchema   string `yaml:"DBSchema"`
+}
+
+type Config struct {
+	Port           string `yaml:"Port"`
+	UserImagesPath string `yaml:"UserImagesPath"`
+	PublicURL      string `yaml:"PublicURL"`
+	Databases []*DB `yaml:"Databases"`
+	
 
 	TimeZone string `yaml:"TimeZone"`
 
@@ -45,17 +49,21 @@ func (c *Config) GetConf() *Config {
 		log.Println("using configuration from environment variables")
 		c.UserImagesPath = os.Getenv("UserImagesPath")
 
-		c.DBHost = os.Getenv("DBHost")
+		
+		//get first db
+		var db = new(DB)
+		db.DBHost = os.Getenv("DBHost")
 		intPort, errPort := strconv.Atoi(os.Getenv("DBPort"))
 		if errPort == nil {
-			c.DBPort = intPort
+			db.DBPort = intPort
 		}
-
-		c.DBUsername = os.Getenv("DBUsername")
-		c.DBPassword = os.Getenv("DBPassword")
-		c.DBName = os.Getenv("DBName")
-		c.DBSchema = os.Getenv("DBSchema")
-
+		db.DBUsername = os.Getenv("DBUsername")
+		db.DBPassword = os.Getenv("DBPassword")
+		db.DBName = os.Getenv("DBName")
+		db.DBSchema = os.Getenv("DBSchema")
+		
+		c.Databases = append(c.Databases,db)
+		
 		c.TimeZone = os.Getenv("TimeZone")
 
 		c.SMTPHost = os.Getenv("SMTPHost")

@@ -1,3 +1,5 @@
+https://www.figma.com/file/FmaQqywNwwKhxNBo3mqs0s/Untitled?type=design&node-id=0-1&t=RD0xVLTCzJwRAzvf-0
+
 java -jar dsl-clc.jar properties=bacteria.props
 '/media/aldo/data2/projects/aifruit/apps/tables-to-go-master/bin/tables-to-go' -v -t pg -h localhost -d mekavision -s mekavision -u postgres -p willamette -pn "entities" -of /media/aldo/data2/projects/aifruit/specs/generated
 

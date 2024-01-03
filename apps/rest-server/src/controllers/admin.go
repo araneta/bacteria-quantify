@@ -43,7 +43,7 @@ func (c *AdminController) AddUser(ctx iris.Context) {
 	}
 	//var respond CommonRespond
 
-	user, err := c.ServiceProvider.UserSvc.CreateUser(form.FullName, form.Email, form.MobileNo, form.Password, form.Role)
+	user, err := c.ServiceProvider.UserSvc.CreateUser(form.FullName, form.Email, form.MobileNo, form.Password)
 
 	if err != nil {
 		ctx.JSON(iris.Map{"status": 0, "message": err})
