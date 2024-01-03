@@ -28,7 +28,7 @@ func newHistory(db *gorm.DB, opts ...gen.DOOption) history {
 	tableName := _history.historyDo.TableName()
 	_history.ALL = field.NewAsterisk(tableName)
 	_history.ID = field.NewInt32(tableName, "ID")
-	_history.SampleName = field.NewString(tableName, "SampleName")
+	_history.SampleName = field.NewString(tableName, "sampleName")
 	_history.UserID = field.NewInt32(tableName, "UserID")
 	_history.LocalFileImage = field.NewString(tableName, "localFileImage")
 	_history.CreatedAt = field.NewTime(tableName, "createdAt")
@@ -68,7 +68,7 @@ func (h history) As(alias string) *history {
 func (h *history) updateTableName(table string) *history {
 	h.ALL = field.NewAsterisk(table)
 	h.ID = field.NewInt32(table, "ID")
-	h.SampleName = field.NewString(table, "SampleName")
+	h.SampleName = field.NewString(table, "sampleName")
 	h.UserID = field.NewInt32(table, "UserID")
 	h.LocalFileImage = field.NewString(table, "localFileImage")
 	h.CreatedAt = field.NewTime(table, "createdAt")
@@ -92,7 +92,7 @@ func (h *history) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 func (h *history) fillFieldMap() {
 	h.fieldMap = make(map[string]field.Expr, 7)
 	h.fieldMap["ID"] = h.ID
-	h.fieldMap["SampleName"] = h.SampleName
+	h.fieldMap["sampleName"] = h.SampleName
 	h.fieldMap["UserID"] = h.UserID
 	h.fieldMap["localFileImage"] = h.LocalFileImage
 	h.fieldMap["createdAt"] = h.CreatedAt

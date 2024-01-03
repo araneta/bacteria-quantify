@@ -52,8 +52,10 @@ func (e *DBAdapter) Init(host string, port int,
 	schema string, timezone string) {
 	//loc, _ := time.LoadLocation(timezone) // handle any errors!
 	os.Setenv("TZ", timezone)
-	fmt.Printf(timezone)
+	fmt.Println("Timezone:")
+	fmt.Println(timezone)
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d search_path=%s sslmode=disable TimeZone=%s", host, dbuser, dbpassword, dbname, port, schema, timezone)
+	fmt.Println("Dsn:" + dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")

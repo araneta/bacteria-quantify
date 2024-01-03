@@ -266,7 +266,7 @@ func (c *UserController) GetHistories(ctx iris.Context) {
 	payload := user.Claims.(jwt.MapClaims)
 	userID := int(payload["userID"].(float64))
 
-	localuser, errUser := c.ServiceProvider.UserSvc.Find(userID)
+	_, errUser := c.ServiceProvider.UserSvc.Find(userID)
 	if errUser != nil {
 		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
 			Title("Not found").DetailErr(errUser))
@@ -274,7 +274,7 @@ func (c *UserController) GetHistories(ctx iris.Context) {
 		return
 	}
 
-	result, err := c.ServiceProvider.AppSvc.GetDispositions(incomingLetterID)
+	result, err := c.ServiceProvider.AppSvc.GetHistories(userID)
 	if err != nil {
 		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
 			Title("Not found").DetailErr(err))

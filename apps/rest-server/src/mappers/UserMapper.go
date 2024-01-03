@@ -5,7 +5,7 @@ import (
 	"bacteriapp/core"
 	"bacteriapp/helpers"
 	"bacteriapp/model"
-
+	"bacteriapp/query"
 	"fmt"
 	_ "log"
 	_ "strconv"
@@ -47,17 +47,15 @@ func (m *UserMapper) Delete(entity *model.User) (*model.User, error) {
 	return entity, nil
 }
 func (m *UserMapper) FindByEmail(email string) (*model.User, error) {
-	user := new(model.User)
-	/*
-		var cond = map[string]string{"email": email}
-		m.Adapter.Select(m.EntityTable, cond, "AND", nil, 0, 0 ).Scan(user);
-	*/
-	// Get first matched record
-	result := m.Adapter.Where("email = ?", email).First(&user)
-	if result.RowsAffected == 0 {
-		return nil, nil
+	fmt.Printf("%v", email)
+	u := query.User
+	item, errItem := query.User.Where(
+		u.Email.Eq(email),
+	).First()
+	if errItem != nil && errItem.Error() != "record not found" {
+		return nil, errItem
 	}
-	return user, nil
+	return item, nil
 }
 func (m *UserMapper) FindAll() ([]model.User, error) {
 	var users []model.User

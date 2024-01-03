@@ -12,8 +12,9 @@ const TableNameHistory = "History"
 
 // History mapped from table <History>
 type History struct {
-	ID             int32     `gorm:"column:ID;primaryKey;default:nextval('"History_ID_seq"'::regclass);comment:NGS generated" json:"ID"`       // NGS generated
-	SampleName     string    `gorm:"column:SampleName;not null;default:''::character varying;comment:NGS generated" json:"SampleName"`         // NGS generated
+	//ID             int32     `gorm:"column:ID;primaryKey;default:nextval('"History_ID_seq"'::regclass);comment:NGS generated" json:"ID"`       // NGS generated
+	ID             int32     `gorm:"column:ID;primaryKey;comment:NGS generated" json:"ID"`                                                     // NGS generated
+	SampleName     string    `gorm:"column:sampleName;not null;default:''::character varying;comment:NGS generated" json:"sampleName"`         // NGS generated
 	UserID         int32     `gorm:"column:UserID;not null;comment:NGS generated" json:"UserID"`                                               // NGS generated
 	LocalFileImage string    `gorm:"column:localFileImage;not null;default:''::character varying;comment:NGS generated" json:"localFileImage"` // NGS generated
 	CreatedAt      time.Time `gorm:"column:createdAt;comment:NGS generated" json:"createdAt"`                                                  // NGS generated

@@ -3,8 +3,9 @@ package main
 import (
 	"bacteriapp/core"
 	"bacteriapp/mappers"
+	"bacteriapp/query"
 	"bacteriapp/services"
-	_ "fmt"
+	"fmt"
 )
 
 //app di
@@ -19,11 +20,15 @@ func NewApp(userSvc *services.UserService) App {
 }
 */
 func NewServiceProvider(userSvc *services.UserService, mailerSvc *core.MailerService, appSvc *services.AppService) services.ServiceProvider {
+	fmt.Printf("%v", "NewServiceProvider")
 	return services.ServiceProvider{UserSvc: userSvc, MailerSvc: mailerSvc, AppSvc: appSvc}
 }
 func NewDBAdapter(c *core.Config) *core.DBAdapter {
+	fmt.Printf("%v", "NewDBAdapter")
 	var myDb = new(core.DBAdapter)
-	myDb.Init(c.DBHost, c.DBPort, c.DBUsername, c.DBPassword, c.DBName, c.DBSchema, c.TimeZone)
+	var firstDB = c.Databases[0]
+	myDb.Init(firstDB.DBHost, firstDB.DBPort, firstDB.DBUsername, firstDB.DBPassword, firstDB.DBName, firstDB.DBSchema, c.TimeZone)
+	query.SetDefault(myDb.DB)
 	return myDb
 }
 
