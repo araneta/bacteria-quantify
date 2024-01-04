@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'ForgotPassword.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  String selectedAuth = "Masuk";
+  AuthScreen({super.key, this.selectedAuth = "Masuk"});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -17,6 +18,12 @@ class _AuthScreenState extends State<AuthScreen> {
   final passwordCtr = TextEditingController();
   bool isLoading = false;
   String selectedAuth = "Masuk";
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() => {selectedAuth = widget.selectedAuth});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,13 +124,19 @@ class _AuthScreenState extends State<AuthScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  'Belum mendaftar?',
-                                  style: TextStyle(
-                                    fontSize: fontSizeNormal,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
+                                GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedAuth = "Daftar";
+                                      });
+                                    },
+                                    child: Text(
+                                      'Belum mendaftar?',
+                                      style: TextStyle(
+                                        fontSize: fontSizeNormal,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    )),
                                 Text(
                                   ' / ',
                                   style: TextStyle(

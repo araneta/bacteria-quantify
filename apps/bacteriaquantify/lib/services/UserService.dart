@@ -36,6 +36,9 @@ class UserService {
       if (jsonData != null) {
         if (jsonData['status'] == 1) {
           success = true;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Password updated, please check your email"),
+          ));
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

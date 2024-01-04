@@ -2,6 +2,8 @@ import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:flutter/material.dart';
 
+import 'auth_screen.dart';
+
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
 
@@ -10,9 +12,8 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  final nameCtr = TextEditingController();
   final usernameCtr = TextEditingController();
-  final passwordCtr = TextEditingController();
+
   bool isLoading = false;
   String selectedAuth = "Masuk";
 
@@ -120,26 +121,52 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       child: Text("Kirim"),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Sudah mendaftar? ',
-                          style: TextStyle(fontSize: fontSizeNormal),
-                        ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AuthScreen()),
+                            );
+                          },
                           child: const Text(
                             'Masuk',
                             style: TextStyle(
-                                fontSize: fontSizeNormal,
-                                color: Color(0XFF4FA6CB)),
+                              fontSize: fontSizeBig,
+                              color: Color(0XFF4FA6CB),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Spacer(), // give it width
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AuthScreen(selectedAuth: "Daftar")),
+                            );
+                          },
+                          child: const Text(
+                            'Daftar',
+                            style: TextStyle(
+                              fontSize: fontSizeBig,
+                              color: Color(0XFF4FA6CB),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         )
                       ],
-                    )
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
                   ],
                 ),
               ),
@@ -165,7 +192,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   resetPassword(String email) async {
-    print('register;');
+    print('resetPassword;');
     setState(() {
       isLoading = true;
     });
@@ -181,28 +208,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Reset password gagal"),
       ));
-    }
-  }
-
-  login(String email, String password) async {
-    print('login;');
-    setState(() {
-      isLoading = true;
-    });
-    var success = await UserService(context: context).login(email, password);
-    setState(() {
-      isLoading = false;
-    });
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("login bro"),
-      ));
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("user name or password is incorrect"),
-        ));
-      }
     }
   }
 }
