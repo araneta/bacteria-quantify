@@ -36,7 +36,8 @@ class _AuthScreenState extends State<AuthScreen> {
             height: double.infinity,
             fit: BoxFit.cover,
           ),
-          Column(
+          SingleChildScrollView(
+              child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -213,7 +214,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             ],
-          )
+          ))
         ],
       ),
     );
