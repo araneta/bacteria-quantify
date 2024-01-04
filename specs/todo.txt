@@ -1,7 +1,7 @@
 1. login [done]
 2. register [done]
-3. lupa password
-4. dashboard
+3. lupa password [done]
+4. dashboard [done]
 5. take photo
 6. insert photo
 7. list history
