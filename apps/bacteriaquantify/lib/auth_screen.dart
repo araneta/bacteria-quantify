@@ -2,6 +2,7 @@ import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:flutter/material.dart';
 
+import 'Dashboard.dart';
 import 'ForgotPassword.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -14,8 +15,8 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final nameCtr = TextEditingController();
-  final usernameCtr = TextEditingController();
-  final passwordCtr = TextEditingController();
+  final usernameCtr = TextEditingController(text: "bejo@mailnesia.com");
+  final passwordCtr = TextEditingController(text: "ybifLBEmrE");
   bool isLoading = false;
   String selectedAuth = "Masuk";
 
@@ -321,9 +322,10 @@ class _AuthScreenState extends State<AuthScreen> {
       isLoading = false;
     });
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("login bro"),
-      ));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dashboard()),
+      );
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

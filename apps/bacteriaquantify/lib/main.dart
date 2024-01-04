@@ -1,8 +1,24 @@
+import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/auth_screen.dart';
+import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'models/User.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp();
+
+  await UserPreferences.init();
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://ea98d019c31d44ff856075ded29c2251@o89294.ingest.sentry.io/4504236923944960';
+      options.tracesSampleRate = 1.0;
+    },
+    // Init your App.
+    appRunner: () => runApp(const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,10 +26,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User user = UserPreferences.getUser();
+
     return MaterialApp(
       title: 'Bacteria Quantify',
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Poppins'),
-      home: const MyHomePage(),
+      home: user.isEmpty ? const MyHomePage() : const Dashboard(),
       debugShowCheckedModeBanner: false,
     );
   }
