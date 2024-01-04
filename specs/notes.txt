@@ -27,3 +27,6 @@ sudo certbot --nginx -d mekavision.aldoapp.com
 
 change sudo nano /etc/nginx/nginx.conf
 user from wwdata to mekavision
+
+test user:
+bejo@mailnesia.com ybifLBEmrE
