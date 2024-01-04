@@ -37,7 +37,7 @@ class _DashboardState extends State<Dashboard> {
                 height: 90,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('top-pattern.png'),
+                    image: AssetImage('assets/top-pattern.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -99,7 +99,8 @@ class _DashboardState extends State<Dashboard> {
                                       onTap: () async {
                                         print("take photo");
                                       },
-                                      icon: AssetImage("add_a_photo_24px.png"),
+                                      icon: AssetImage(
+                                          "assets/add_a_photo_24px.png"),
                                       title: "Take a Photo")),
                               SizedBox(
                                 height: 10,
@@ -113,7 +114,7 @@ class _DashboardState extends State<Dashboard> {
                                         print("insert photo");
                                       },
                                       icon: AssetImage(
-                                          "add_photo_alternate_24px.png"),
+                                          "assets/add_photo_alternate_24px.png"),
                                       title: "Insert Photo")),
                               SizedBox(
                                 height: 10,
@@ -126,7 +127,8 @@ class _DashboardState extends State<Dashboard> {
                                       onTap: () async {
                                         print("History photo");
                                       },
-                                      icon: AssetImage("history_24px.png"),
+                                      icon:
+                                          AssetImage("assets/history_24px.png"),
                                       title: "History")),
                             ],
                           ),
