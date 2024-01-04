@@ -152,6 +152,7 @@ func main() {
 	API := app.Party("/api")
 	{
 		API.Post("/register", adminCont.AddUser)
+		API.Post("/reset-password", userCont.ResetPassword)
 		//admin---------------
 		API.Get("/install", adminCont.Install)
 
