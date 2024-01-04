@@ -25,6 +25,10 @@ class _DashboardState extends State<Dashboard> {
 
   bool isLoading = false;
   String selectedAuth = "Masuk";
+  ImageProvider provider = ExtendedExactAssetImageProvider(
+    'assets/home_24px.png',
+    cacheRawData: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +108,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: BigRoundIconButton(
                                       onTap: () async {
                                         print("take photo");
+                                        _pick();
                                       },
                                       icon: AssetImage(
                                           "assets/add_a_photo_24px.png"),
