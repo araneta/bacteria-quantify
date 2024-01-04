@@ -11,7 +11,7 @@ export ANDROID_SDK_ROOT=/media/aldo/49909430-d2bd-4bcf-be1d-3c425a4013bf/apps/An
 export FLUTTER=/media/aldo/49909430-d2bd-4bcf-be1d-3c425a4013bf/apps/flutter-3.7.12/flutter
 export PATH=$FLUTTER/bin:$PATH
 flutter config --android-sdk ANDROID_SDK
-flutter pub add material
+flutter pub add extended_image
 flutter devices
 #flutter build apk
 flutter run

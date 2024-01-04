@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:flutter/material.dart';
+import 'package:image_editor/image_editor.dart' hide ImageSource;
+import 'package:image_picker/image_picker.dart';
+import 'package:extended_image/extended_image.dart';
 
+import 'package:oktoast/oktoast.dart';
 import 'auth_screen.dart';
 import 'models/User.dart';
 
@@ -137,5 +143,18 @@ class _DashboardState extends State<Dashboard> {
             ]))
       ]),
     ));
+  }
+
+  Future<void> _pick() async {
+    final XFile? result = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    );
+    if (result == null) {
+      showToast('The pick file is null');
+      return;
+    }
+    print(result.path);
+    provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
+    setState(() {});
   }
 }
