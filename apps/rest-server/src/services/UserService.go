@@ -226,3 +226,59 @@ func (s *UserService) UpdateProfile(userID int, form *dto.UpdateProfileForm) (*m
 	//	return nil, errors.New("Incorrect Password")
 	//}
 }
+
+func (s *UserService) ResetPassword(userID int, email string) (*model.User, error) {
+	user, err := s.Find(userID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("user: %v\n", user)
+	if user == nil {
+		return nil, errors.New("User not found")
+	}
+
+	var password = strings.TrimSpace(helpers.RandStringBytesMaskImprSrcUnsafe(10))
+	fmt.Printf("password: %v\n", password)
+	hashPass, err := helpers.PasswordHash(password)
+	if err != nil {
+		//panic("Failed to generate password hash")
+		return nil, err
+	}
+	user.Password = hashPass
+
+	updatedUser, errUpdate := s.Mapper.Update(user)
+	if errUpdate == nil {
+		//send email
+		fmt.Printf("send email: %v\n", updatedUser)
+		errEmail := s.SendNewPasswordEmail(password, email)
+		if errEmail != nil {
+			return updatedUser, errEmail
+		}
+	} else {
+		fmt.Printf("err update: %v\n", errUpdate)
+	}
+	return updatedUser, errUpdate
+}
+func (s *UserService) SendNewPasswordEmail(newPassword, email string) error {
+	fmt.Printf("send email1: %v\n", email)
+	templateData := struct {
+		NewPassword string
+	}{
+		NewPassword: newPassword,
+	}
+	subject := "New Password Email"
+	var tos []string
+	fmt.Printf("send email2: %v\n", email)
+	tos = append(tos, email)
+	tos = append(tos, "aldopraherda@gmail.com")
+	fmt.Printf("send email3: %v\n", email)
+	html, err := s.MailerSvc.ParseTemplate("templates/NewPasswordEmail.html", templateData)
+	if err == nil {
+		fmt.Printf("send email4: %v\n", email)
+		return s.MailerSvc.SendMail(tos, email, s.MailerSvc.SMTPUsername, subject, html, "")
+	} else {
+		fmt.Printf("send email err: %v\n", err)
+	}
+	fmt.Printf("send email5: %v\n", email)
+	return err
+}

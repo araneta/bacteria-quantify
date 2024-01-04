@@ -60,6 +60,41 @@ func (c *UserController) Verify(ctx iris.Context) {
 
 }
 
+func (c *UserController) ResetPassword(ctx iris.Context) {
+	fmt.Printf("ResetPassword: %v\n", "1")
+	var form dto.ResetPasswordForm
+
+	err := ctx.ReadBody(&form)
+	if err != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest,
+			iris.NewProblem().Title("Parser issue").Detail(err.Error()))
+		return
+	}
+	localuser, errUser := c.ServiceProvider.UserSvc.FindByEmail(form.Email)
+	if errUser != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(errUser))
+
+		return
+	}
+	var respond CommonRespond2
+	respond.Status = 1
+
+	//save the image id / avatar
+	updatedUser, errUpdate := c.ServiceProvider.UserSvc.ResetPassword(int(localuser.ID), form.Email)
+
+	if errUpdate != nil {
+		respond.Status = 0
+		respond.Message = errUpdate.Error()
+		ctx.JSON(respond)
+		return
+	}
+
+	respond.Message = updatedUser
+
+	ctx.JSON(respond)
+}
+
 func (c *UserController) UploadAvatar(ctx iris.Context) {
 	user := ctx.Values().Get("jwt").(*jwt.Token)
 
