@@ -1,16 +1,8 @@
-import 'dart:io';
-
-import 'package:bacteriaquantify/services/UserService.dart';
-import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:flutter/material.dart';
-import 'package:image_editor/image_editor.dart' hide ImageSource;
-import 'package:image_picker/image_picker.dart';
-import 'package:extended_image/extended_image.dart';
+import 'Preview.dart';
 
-import 'package:oktoast/oktoast.dart';
-import 'auth_screen.dart';
 import 'models/User.dart';
 
 class Dashboard extends StatefulWidget {
@@ -24,11 +16,6 @@ class _DashboardState extends State<Dashboard> {
   final usernameCtr = TextEditingController();
 
   bool isLoading = false;
-  String selectedAuth = "Masuk";
-  ImageProvider provider = ExtendedExactAssetImageProvider(
-    'assets/home_24px.png',
-    cacheRawData: true,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
                 height: 90,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/top-pattern.png'),
+                    image: AssetImage('assets/topbg.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -108,7 +95,11 @@ class _DashboardState extends State<Dashboard> {
                                   child: BigRoundIconButton(
                                       onTap: () async {
                                         print("take photo");
-                                        _pick();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Preview()),
+                                        );
                                       },
                                       icon: AssetImage(
                                           "assets/add_a_photo_24px.png"),
@@ -148,18 +139,5 @@ class _DashboardState extends State<Dashboard> {
             ]))
       ]),
     ));
-  }
-
-  Future<void> _pick() async {
-    final XFile? result = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    );
-    if (result == null) {
-      showToast('The pick file is null');
-      return;
-    }
-    print(result.path);
-    provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
-    setState(() {});
   }
 }
