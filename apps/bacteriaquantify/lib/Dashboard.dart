@@ -1,3 +1,4 @@
+import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _DashboardState extends State<Dashboard> {
                             const Text(
                               'Bacteria\nQuantify!',
                               style: TextStyle(
-                                  color: Color(0XFF4FA6CB),
+                                  color: textBlue,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold),
                             )
@@ -98,7 +99,9 @@ class _DashboardState extends State<Dashboard> {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => Preview()),
+                                              builder: (context) => Preview(
+                                                    showImagePicker: true,
+                                                  )),
                                         );
                                       },
                                       icon: AssetImage(
