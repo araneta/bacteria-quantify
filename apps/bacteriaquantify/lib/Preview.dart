@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
+import 'package:path/path.dart' as Path;
 import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
@@ -11,8 +16,10 @@ import 'package:flutter/material.dart';
 import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
 import 'package:extended_image/extended_image.dart';
-
+import 'package:bacteriaquantify/utils/Media.dart';
+import 'package:bacteriaquantify/utils/MultipartRequest.dart';
 import 'package:oktoast/oktoast.dart';
+import 'Config.dart';
 import 'auth_screen.dart';
 import 'models/User.dart';
 
@@ -25,19 +32,25 @@ class Preview extends StatefulWidget {
 }
 
 class _PreviewState extends State<Preview> {
-  final usernameCtr = TextEditingController();
-
-  bool showBrightness = false;
-  bool showContrast = false;
-  bool showSaturation = false;
-
-  bool isLoading = false;
-  final GlobalKey<ExtendedImageEditorState> editorKey = GlobalKey();
-
   ImageProvider provider = ExtendedExactAssetImageProvider(
     'assets/home_24px.png',
     cacheRawData: true,
   );
+
+  final usernameCtr = TextEditingController();
+  String imageID = "";
+  bool showBrightness = false;
+  bool showContrast = false;
+  bool showSaturation = false;
+  bool isDone = false;
+  bool isButtonDisabled = true;
+  double _progressValue = 0;
+  int _progressPercentValue = 0;
+  bool isLoading = false;
+  final GlobalKey<ExtendedImageEditorState> editorKey = GlobalKey();
+  String localFileURL = "";
+  //return from server
+  String fileurl = "";
 
   @override
   void initState() {
@@ -237,8 +250,19 @@ class _PreviewState extends State<Preview> {
                             child: BigRoundButton(
                                 onTap: () async {
                                   print("calculate");
+
+                                  if (isDone) {
+                                    print("calculatex1");
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    print("calculatex2");
+                                    if (!isButtonDisabled) {
+                                      print("calculatex4");
+                                      uploadImageWithHttp()!;
+                                    }
+                                  }
                                 },
-                                title: "Take a Photo"))
+                                title: "Calculate"))
                       ])),
             ]))
       ]),
@@ -279,20 +303,54 @@ class _PreviewState extends State<Preview> {
     provider = FileImage(file);
     print("pick5");
     provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
-    setState(() {});
+    setState(() {
+      isButtonDisabled = false;
+      localFileURL = result.path;
+    });
   }
 
   double sat = 1;
   double bright = 1;
   double con = 1;
 
+  void changeSaturation(double val) async {
+    final ExtendedImageEditorState? cstate = editorKey.currentState;
+    if (cstate == null) {
+      return;
+    }
+
+    // final img = await getImageFromEditorKey(editorKey);
+    final Uint8List? img = cstate.rawImageData;
+
+    if (img == null) {
+      showToast('The img is null.');
+      return;
+    }
+
+    final ImageEditorOption option = ImageEditorOption();
+    option.addOption(ColorOption.saturation(val));
+    option.outputFormat = const OutputFormat.png(88);
+
+    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
+
+    final DateTime start = DateTime.now();
+    final Uint8List? result = await ImageEditor.editImage(
+      image: img,
+      imageEditorOption: option,
+    );
+
+    print('result.length = ${result?.length}');
+  }
+
   Widget _buildSat() {
     return Slider(
       label: 'sat : ${sat.toStringAsFixed(2)}',
       onChanged: (double value) {
+        print(value);
         setState(() {
           sat = value;
         });
+        changeSaturation(value);
       },
       value: sat,
       min: 0,
@@ -304,6 +362,7 @@ class _PreviewState extends State<Preview> {
     return Slider(
       label: 'brightness : ${bright.toStringAsFixed(2)}',
       onChanged: (double value) {
+        print(value);
         setState(() {
           bright = value;
         });
@@ -318,6 +377,7 @@ class _PreviewState extends State<Preview> {
     return Slider(
       label: 'con : ${con.toStringAsFixed(2)}',
       onChanged: (double value) {
+        print(value);
         setState(() {
           con = value;
         });
@@ -413,5 +473,92 @@ class _PreviewState extends State<Preview> {
         ),
       ),
     );
+  }
+
+  double remap(double value, double originalMinValue, double originalMaxValue,
+      double translatedMinValue, double translatedMaxValue) {
+    if (originalMaxValue - originalMinValue == 0) return 0;
+
+    return (value - originalMinValue) /
+            (originalMaxValue - originalMinValue) *
+            (translatedMaxValue - translatedMinValue) +
+        translatedMinValue;
+  }
+
+  void _setUploadProgress(int sentBytes, int totalBytes) {
+    double __progressValue =
+        remap(sentBytes.toDouble(), 0, totalBytes.toDouble(), 0, 1);
+
+    __progressValue = double.parse(__progressValue.toStringAsFixed(2));
+
+    if (__progressValue != _progressValue)
+      setState(() {
+        _progressValue = __progressValue;
+        _progressPercentValue = (_progressValue * 100.0).toInt();
+      });
+  }
+
+  uploadImageWithHttp() async {
+    print("uploadImageWithHttp");
+    User user = UserPreferences.getUser();
+    final url = '${Config.API_HOST}/api/upload-detect';
+    setState(() {
+      imageID = "";
+      isDone = false;
+      isButtonDisabled = true;
+    });
+    _setUploadProgress(0, 0);
+
+    final request = MultipartRequest2(
+      'POST',
+      Uri.parse(url),
+      onProgress: (int bytes, int total) {
+        final progress = bytes / total;
+        print('progress: $progress ($bytes/$total)');
+        setState(() {
+          _progressValue = progress;
+          _progressPercentValue = (progress * 100.0).toInt();
+        });
+      },
+    );
+
+    request.headers['Authorization'] = "Bearer ${user.token}";
+    request.fields['form_key'] = 'form_value';
+    print("uploadImageWithHttp");
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        localFileURL,
+        contentType: MediaType('image', 'jpeg'),
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    print("result");
+    final respStr = await streamedResponse.stream.bytesToString();
+    print(respStr);
+    print("json result");
+    final responseJson = json.decode(respStr);
+    print(responseJson);
+
+    int n = 0;
+    String id = "";
+    if (responseJson["status"] == 1) {
+      final imageDetails = responseJson["message"];
+      id = imageDetails["imageID"];
+
+      print("imageID $imageID");
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(responseJson["message"]),
+      ));
+    }
+
+    setState(() {
+      imageID = id;
+      isDone = true;
+      isButtonDisabled = false;
+      fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
+    });
   }
 }
