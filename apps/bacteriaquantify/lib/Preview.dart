@@ -24,8 +24,8 @@ import 'auth_screen.dart';
 import 'models/User.dart';
 
 class Preview extends StatefulWidget {
-  bool showImagePicker = true;
-  Preview({required this.showImagePicker});
+  int source = 1; //1:camera, 2: gallery
+  Preview({required this.source});
 
   @override
   State<Preview> createState() => _PreviewState();
@@ -55,9 +55,8 @@ class _PreviewState extends State<Preview> {
   @override
   void initState() {
     super.initState();
-    if (widget.showImagePicker) {
-      _pick();
-    }
+
+    _pick(widget.source);
   }
 
   @override
@@ -128,15 +127,7 @@ class _PreviewState extends State<Preview> {
                           child: buildImage(),
                         ),*/
                         buildImage(),
-                        const SizedBox(height: 44),
-                        BigRoundIconButton(
-                            onTap: () async {
-                              print("insert photo");
-                              _pick();
-                            },
-                            icon: const AssetImage(
-                                "assets/add_photo_alternate_24px.png"),
-                            title: "Insert Photo"),
+                        const SizedBox(height: 24),
                         Column(
                           children: <Widget>[
                             showBrightness
@@ -286,10 +277,10 @@ class _PreviewState extends State<Preview> {
     );
   }
 
-  Future<void> _pick() async {
+  Future<void> _pick(int source) async {
     print("pick1");
     final XFile? result = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
+      source: source == 1 ? ImageSource.camera : ImageSource.gallery,
     );
     print("pick2");
     if (result == null) {

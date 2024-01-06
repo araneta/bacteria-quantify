@@ -100,7 +100,7 @@ class _DashboardState extends State<Dashboard> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => Preview(
-                                                    showImagePicker: true,
+                                                    source: 1,
                                                   )),
                                         );
                                       },
@@ -117,6 +117,13 @@ class _DashboardState extends State<Dashboard> {
                                   child: BigRoundIconButton(
                                       onTap: () async {
                                         print("insert photo");
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Preview(
+                                                    source: 2,
+                                                  )),
+                                        );
                                       },
                                       icon: AssetImage(
                                           "assets/add_photo_alternate_24px.png"),
