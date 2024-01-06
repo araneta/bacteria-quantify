@@ -20,7 +20,9 @@ import 'package:bacteriaquantify/utils/Media.dart';
 import 'package:bacteriaquantify/utils/MultipartRequest.dart';
 import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
+import 'Result.dart';
 import 'auth_screen.dart';
+import 'models/DetactionResult.dart';
 import 'models/User.dart';
 
 class Preview extends StatefulWidget {
@@ -85,8 +87,11 @@ class _PreviewState extends State<Preview> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Dashboard()),
+                              );
                             }, // Image tapped
                             child: const Image(
                                 width: 30,
@@ -535,10 +540,22 @@ class _PreviewState extends State<Preview> {
     int n = 0;
     String id = "";
     if (responseJson["status"] == 1) {
-      final imageDetails = responseJson["message"];
-      id = imageDetails["imageID"];
+      //final imageDetails = responseJson["message"];
+      try {
+        var detectionResult = DetectionResult.fromJson(responseJson);
+        //id = imageDetails["imageID"];
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Result(
+                    detectionResult: detectionResult,
+                  )),
+        );
+      } catch (ex) {
+        print(ex);
+      }
 
-      print("imageID $imageID");
+      //print("imageID $imageID");
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(responseJson["message"]),
