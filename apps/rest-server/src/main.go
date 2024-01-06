@@ -171,6 +171,8 @@ func main() {
 		API.Post("/histories", j.Serve, userCont.SaveHistory)
 		API.Get("/histories", j.Serve, userCont.GetHistories)
 
+		API.Post("/upload-detect", j.Serve, userCont.UploadDetect)
+
 	}
 
 	app.Listen(":" + port)

@@ -87,3 +87,16 @@ func (s *AppService) GetHistories(UserID int) ([]*model.History, error) {
 	}
 	return entities, nil
 }
+func (s *AppService) DetectBacteries(uuid string) ([]*dto.Bacteries, error) {
+	var rows []*dto.Bacteries
+	var row1 = new(dto.Bacteries)
+	row1.Species = "Alien2"
+	row1.TotalColony = 122
+	rows = append(rows, row1)
+
+	var row2 = new(dto.Bacteries)
+	row2.Species = "Alie32"
+	row2.TotalColony = 142
+	rows = append(rows, row2)
+	return rows, nil
+}
