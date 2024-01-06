@@ -319,3 +319,54 @@ func (c *UserController) GetHistories(ctx iris.Context) {
 		ctx.JSON(iris.Map{"status": "1", "message": result})
 	}
 }
+
+func (c *UserController) UploadDetect(ctx iris.Context) {
+	user := ctx.Values().Get("jwt").(*jwt.Token)
+	payload := user.Claims.(jwt.MapClaims)
+	userID := int(payload["userID"].(float64))
+
+	_, errUser := c.ServiceProvider.UserSvc.Find(userID)
+	if errUser != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(errUser))
+
+		return
+	}
+
+	var respond CommonRespond2
+	respond.Status = 1
+
+	// single file
+	file, fileHeader, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.StopWithError(iris.StatusBadRequest, err)
+		return
+	}
+	defer file.Close()
+
+	uuid := uuid.NewV4().String()
+	// Upload the file to specific destination.
+	localFile := uuid + ".jpg"
+
+	dest := filepath.Join(c.UserImagesPath, localFile)
+	_, errsave := ctx.SaveFormFile(fileHeader, dest)
+	if errsave != nil {
+		//panic(err)
+		respond.Status = 0
+		respond.Message = errsave.Error()
+		return
+	}
+
+	//image recognition
+	details, errdetect := c.ServiceProvider.AppSvc.DetectBacteries(uuid)
+
+	if errdetect != nil {
+		respond.Status = 0
+		respond.Message = errdetect.Error()
+		return
+	}
+
+	respond.Message = details
+
+	ctx.JSON(respond)
+}
