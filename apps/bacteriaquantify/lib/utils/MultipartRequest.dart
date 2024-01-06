@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-class MultipartRequest extends http.MultipartRequest {
+class MultipartRequest2 extends http.MultipartRequest {
   /// Creates a new [MultipartRequest].
-  MultipartRequest(
+  MultipartRequest2(
     String method,
     Uri url, {
     required this.onProgress,
