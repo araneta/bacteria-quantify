@@ -356,7 +356,6 @@ func (c *UserController) UploadDetect(ctx iris.Context) {
 		respond.Message = errsave.Error()
 		return
 	}
-
 	//image recognition
 	details, errdetect := c.ServiceProvider.AppSvc.DetectBacteries(uuid)
 
@@ -365,8 +364,11 @@ func (c *UserController) UploadDetect(ctx iris.Context) {
 		respond.Message = errdetect.Error()
 		return
 	}
+	var result dto.DetectionResult
+	result.ImageID = uuid
+	result.Bacteries = details
 
-	respond.Message = details
+	respond.Message = result
 
 	ctx.JSON(respond)
 }

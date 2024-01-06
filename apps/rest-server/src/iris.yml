@@ -1,6 +1,6 @@
 Port: 8080
 # UserImagesPath: /media/aldo/49909430-d2bd-4bcf-be1d-3c425a4013bf/apps/projects/aifruit/apps/userImages
-UserImagesPath: /home/aldo/projects/disposisi
+UserImagesPath: /home/aldo/projects/bacteria-quantify/apps/rest-server/public/userImages
 
 
 Databases:
