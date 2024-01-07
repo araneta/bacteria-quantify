@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bacteriaquantify/models/DetectionResultResponse.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -22,7 +23,7 @@ import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
 import 'Result.dart';
 import 'auth_screen.dart';
-import 'models/DetactionResult.dart';
+import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
 class Preview extends StatefulWidget {
@@ -355,7 +356,7 @@ class _PreviewState extends State<Preview> {
         setState(() {
           sat = value;
         });
-        changeSaturation(value);
+        crop(true);
       },
       value: sat,
       min: 0,
@@ -371,6 +372,7 @@ class _PreviewState extends State<Preview> {
         setState(() {
           bright = value;
         });
+        crop(true);
       },
       value: bright,
       min: 0,
@@ -386,6 +388,7 @@ class _PreviewState extends State<Preview> {
         setState(() {
           con = value;
         });
+        crop(true);
       },
       value: con,
       min: 0,
@@ -545,12 +548,13 @@ class _PreviewState extends State<Preview> {
       print("json result");
       final responseJson = json.decode(respStr);
       print(responseJson);
-      var detectionResult = DetectionResult.fromJson(responseJson);
+      var detectionResultResponse =
+          DetectionResultResponse.fromJson(responseJson);
 
-      if (detectionResult.status == 1) {
+      if (detectionResultResponse.status == 1) {
         //final imageDetails = responseJson["message"];
 
-        var id = detectionResult.message!.imageID!;
+        var id = detectionResultResponse.message!.imageID!;
         setState(() {
           imageID = id;
           fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
@@ -559,7 +563,7 @@ class _PreviewState extends State<Preview> {
           context,
           MaterialPageRoute(
               builder: (context) => Result(
-                    detectionResult: detectionResult,
+                    detectionResult: detectionResultResponse.message!,
                   )),
         );
 

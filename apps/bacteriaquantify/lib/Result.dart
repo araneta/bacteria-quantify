@@ -1,28 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
+import 'package:bacteriaquantify/services/HistoryService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-
-import 'package:path/path.dart' as Path;
-import 'dart:typed_data';
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:bacteriaquantify/Dashboard.dart';
-import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
-import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
-import 'package:image_editor/image_editor.dart' hide ImageSource;
-import 'package:image_picker/image_picker.dart';
-import 'package:extended_image/extended_image.dart';
-import 'package:bacteriaquantify/utils/Media.dart';
-import 'package:bacteriaquantify/utils/MultipartRequest.dart';
-import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
-import 'auth_screen.dart';
-import 'models/DetactionResult.dart';
+import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
 class Result extends StatefulWidget {
@@ -36,6 +20,7 @@ class Result extends StatefulWidget {
 class _ResultState extends State<Result> {
   TextEditingController sampleNameController = TextEditingController();
   String imageURL = "";
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -43,7 +28,7 @@ class _ResultState extends State<Result> {
     setState(() {
       imageURL = Config.API_HOST +
           "/userImages/" +
-          widget.detectionResult.message!.imageID! +
+          widget.detectionResult.imageID! +
           ".jpg";
     });
   }
@@ -181,7 +166,7 @@ class _ResultState extends State<Result> {
                                   // Using the spread operator to add the remaining table rows which have dynamic data
                                   // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
 
-                                  ...widget.detectionResult.message!.bacteries!
+                                  ...widget.detectionResult.bacteries!
                                       .asMap()
                                       .entries
                                       .map(
@@ -248,6 +233,17 @@ class _ResultState extends State<Result> {
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
                                               print("Save");
+                                              if (sampleNameController.text ==
+                                                  "") {
+                                                print('t3');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      "Please enter sample name"),
+                                                ));
+                                              } else {
+                                                saveResult();
+                                              }
                                             },
                                             icon: AssetImage(
                                                 "assets/save_alt_24px_outlined.png"),
@@ -267,5 +263,29 @@ class _ResultState extends State<Result> {
                 ]))
       ]),
     ));
+  }
+
+  saveResult() async {
+    print('login;');
+    setState(() {
+      isLoading = true;
+    });
+    var success = await HistoryService(context: context)
+        .saveHistory(sampleNameController.text, widget.detectionResult);
+    setState(() {
+      isLoading = false;
+    });
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dashboard()),
+      );
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Failed to save"),
+        ));
+      }
+    }
   }
 }

@@ -2,8 +2,10 @@ import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Preview.dart';
 
+import 'auth_screen.dart';
 import 'models/User.dart';
 
 class Dashboard extends StatefulWidget {
@@ -40,24 +42,47 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
                 child: Container(
-                    padding: EdgeInsets.only(left: 40.0, top: 20, bottom: 10),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Selamat Datang!",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              )),
-                          SizedBox(
-                            height: 6,
-                          ),
-                          Text(user.fullName,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700)),
-                        ])),
+                    padding: EdgeInsets.only(
+                        left: 20.0, right: 20, top: 20, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Selamat Datang!",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  )),
+                              SizedBox(
+                                height: 6,
+                              ),
+                              Text(user.fullName,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700)),
+                            ]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                  onTap: () {
+                                    logout();
+                                  },
+                                  child: Text("Logout !",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ))),
+                              SizedBox(
+                                height: 6,
+                              ),
+                            ])
+                      ],
+                    )),
               ),
               Container(
                   padding: EdgeInsets.only(top: 80, bottom: 60.0),
@@ -149,5 +174,14 @@ class _DashboardState extends State<Dashboard> {
             ]))
       ]),
     ));
+  }
+
+  logout() async {
+    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+    sharedPref.clear();
+    sharedPref.commit();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (BuildContext context) => AuthScreen()),
+        (Route<dynamic> route) => false);
   }
 }
