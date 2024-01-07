@@ -1,6 +1,6 @@
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
+import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
 import 'Preview.dart';
 
@@ -93,7 +93,7 @@ class _DashboardState extends State<Dashboard> {
                                   padding:
                                       EdgeInsets.only(bottom: 20.0, top: 4),
                                   width: 190,
-                                  child: BigRoundIconButton(
+                                  child: BigRoundIconTextButton(
                                       onTap: () async {
                                         print("take photo");
                                         Navigator.pushReplacement(
@@ -114,7 +114,7 @@ class _DashboardState extends State<Dashboard> {
                                   padding:
                                       EdgeInsets.only(bottom: 20.0, top: 4),
                                   width: 190,
-                                  child: BigRoundIconButton(
+                                  child: BigRoundIconTextButton(
                                       onTap: () async {
                                         print("insert photo");
                                         Navigator.pushReplacement(
@@ -135,7 +135,7 @@ class _DashboardState extends State<Dashboard> {
                                   padding:
                                       EdgeInsets.only(bottom: 20.0, top: 4),
                                   width: 190,
-                                  child: BigRoundIconButton(
+                                  child: BigRoundIconTextButton(
                                       onTap: () async {
                                         print("History photo");
                                       },

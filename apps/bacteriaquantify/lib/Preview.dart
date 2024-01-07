@@ -121,6 +121,9 @@ class _PreviewState extends State<Preview> {
                           ),
                         ])),
               ),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                   width: size!.width * 0.9,
                   //padding: EdgeInsets.only(top: 80, bottom: 60.0),
@@ -268,8 +271,8 @@ class _PreviewState extends State<Preview> {
   Widget buildImage() {
     return ExtendedImage(
       image: provider,
-      height: 400,
-      width: 400,
+      height: 320,
+      width: 320,
       extendedImageEditorKey: editorKey,
       mode: ExtendedImageMode.editor,
       fit: BoxFit.contain,
@@ -504,46 +507,48 @@ class _PreviewState extends State<Preview> {
       isButtonDisabled = true;
     });
     _setUploadProgress(0, 0);
+    try {
+      final request = MultipartRequest2(
+        'POST',
+        Uri.parse(url),
+        onProgress: (int bytes, int total) {
+          final progress = bytes / total;
+          print('progress: $progress ($bytes/$total)');
+          setState(() {
+            _progressValue = progress;
+            _progressPercentValue = (progress * 100.0).toInt();
+          });
+        },
+      );
 
-    final request = MultipartRequest2(
-      'POST',
-      Uri.parse(url),
-      onProgress: (int bytes, int total) {
-        final progress = bytes / total;
-        print('progress: $progress ($bytes/$total)');
+      request.headers['Authorization'] = "Bearer ${user.token}";
+      request.fields['form_key'] = 'form_value';
+      print("uploadImageWithHttp");
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          localFileURL,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      print("result");
+      final respStr = await streamedResponse.stream.bytesToString();
+      print(respStr);
+      print("json result");
+      final responseJson = json.decode(respStr);
+      print(responseJson);
+      var detectionResult = DetectionResult.fromJson(responseJson);
+
+      if (detectionResult.status == 1) {
+        //final imageDetails = responseJson["message"];
+
+        var id = detectionResult.message!.imageID!;
         setState(() {
-          _progressValue = progress;
-          _progressPercentValue = (progress * 100.0).toInt();
+          imageID = id;
+          fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
         });
-      },
-    );
-
-    request.headers['Authorization'] = "Bearer ${user.token}";
-    request.fields['form_key'] = 'form_value';
-    print("uploadImageWithHttp");
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'file',
-        localFileURL,
-        contentType: MediaType('image', 'jpeg'),
-      ),
-    );
-
-    final streamedResponse = await request.send();
-    print("result");
-    final respStr = await streamedResponse.stream.bytesToString();
-    print(respStr);
-    print("json result");
-    final responseJson = json.decode(respStr);
-    print(responseJson);
-
-    int n = 0;
-    String id = "";
-    if (responseJson["status"] == 1) {
-      //final imageDetails = responseJson["message"];
-      try {
-        var detectionResult = DetectionResult.fromJson(responseJson);
-        //id = imageDetails["imageID"];
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -551,22 +556,23 @@ class _PreviewState extends State<Preview> {
                     detectionResult: detectionResult,
                   )),
         );
-      } catch (ex) {
-        print(ex);
-      }
 
-      //print("imageID $imageID");
-    } else {
+        //print("imageID $imageID");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(responseJson["message"]),
+        ));
+      }
+    } catch (ex) {
+      print(ex);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(responseJson["message"]),
+        content: Text(ex.toString()),
       ));
     }
 
     setState(() {
-      imageID = id;
       isDone = true;
       isButtonDisabled = false;
-      fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
     });
   }
 }

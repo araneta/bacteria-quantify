@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class BigRoundIconButton extends StatelessWidget {
+class BigRoundIconTextButton extends StatelessWidget {
   final VoidCallback onTap;
   final AssetImage icon;
+  final String title;
 
-  const BigRoundIconButton({
+  const BigRoundIconTextButton({
     super.key,
     required this.onTap,
     required this.icon,
+    required this.title,
   });
 
   @override
@@ -35,6 +37,12 @@ class BigRoundIconButton extends StatelessWidget {
           child: Wrap(
             children: <Widget>[
               Image(image: icon),
+              SizedBox(
+                width: 16,
+              ),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600, height: 1.5)),
             ],
           ),
         ));

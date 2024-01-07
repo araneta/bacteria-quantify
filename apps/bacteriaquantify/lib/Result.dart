@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -11,7 +12,7 @@ import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
+import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
 import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
@@ -33,7 +34,9 @@ class Result extends StatefulWidget {
 }
 
 class _ResultState extends State<Result> {
+  TextEditingController sampleNameController = TextEditingController();
   String imageURL = "";
+
   @override
   void initState() {
     super.initState();
@@ -102,6 +105,9 @@ class _ResultState extends State<Result> {
                           ),
                         ])),
               ),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                   width: size!.width * 0.9,
                   //padding: EdgeInsets.only(top: 80, bottom: 60.0),
@@ -115,9 +121,139 @@ class _ResultState extends State<Result> {
                         Container(
                           alignment: Alignment.center, // use aligment
                           child: Image.network(imageURL,
-                              height: 69, width: 134, fit: BoxFit.cover),
+                              height: 320, width: 320, fit: BoxFit.cover),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 30),
+                        Container(
+                          padding: EdgeInsets.only(bottom: 20.0, top: 4),
+                          //width: size!.width * 0.9,
+                          child: TextFormField(
+                            autocorrect: false,
+                            controller: sampleNameController,
+                            decoration: InputDecoration(
+                              fillColor: Color.fromRGBO(196, 231, 246, 1),
+                              filled: true,
+                              border: OutlineInputBorder(),
+                              labelText: "Masukan Nama Sampel...",
+                              labelStyle: TextStyle(
+                                color: Color.fromRGBO(128, 179, 200, 1),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          child: Table(
+                            children: [
+                              //This table row is for the table header which is static
+                              TableRow(children: [
+                                Center(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: Text(
+                                      "Bacteria Species",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15.0,
+                                          color: textBlue),
+                                    ),
+                                  ),
+                                ),
+                                Center(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 4),
+                                    child: Text(
+                                      "Total Colony",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15.0,
+                                          color: textBlue),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                              // Using the spread operator to add the remaining table rows which have dynamic data
+                              // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
+
+                              ...widget.detectionResult.message!.bacteries!
+                                  .asMap()
+                                  .entries
+                                  .map(
+                                (bacteria) {
+                                  return TableRow(
+                                      decoration: BoxDecoration(
+                                          color: Colors.transparent),
+                                      children: [
+                                        Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 4),
+                                            child: Text(bacteria.value.species!,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15.0,
+                                                    color: textBlue)),
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 4),
+                                            child: Text(
+                                                bacteria.value.totalColony
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 15.0,
+                                                    color: textBlue)),
+                                          ),
+                                        ),
+                                      ]);
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                    width: 60,
+                                    child: BigRoundIconButton(
+                                      onTap: () async {
+                                        print("Share");
+                                      },
+                                      icon: AssetImage("assets/share_24px.png"),
+                                    )),
+                                Container(
+                                    width: 200,
+                                    child: BigRoundIconTextButton(
+                                        onTap: () async {
+                                          print("Save");
+                                        },
+                                        icon: AssetImage(
+                                            "assets/save_alt_24px_outlined.png"),
+                                        title: "Save")),
+                                Container(
+                                    width: 60,
+                                    child: BigRoundIconButton(
+                                      onTap: () async {
+                                        print("History");
+                                      },
+                                      icon:
+                                          AssetImage("assets/history_24px.png"),
+                                    ))
+                              ]),
+                        )
                       ])),
             ]))
       ]),
