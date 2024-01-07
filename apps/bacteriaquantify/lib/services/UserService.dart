@@ -21,41 +21,50 @@ class UserService {
     var success = false;
     var url = Config.API_HOST;
     print(jsonEncode(data));
-    var response = await http.post(
-      Uri.parse("$url/api/reset-password"),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode(data),
-    );
-    print(response);
+    try {
+      var response = await http.post(
+        Uri.parse("$url/api/reset-password"),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(data),
+      );
+      print(response);
 
-    if (response.statusCode == 200) {
-      jsonData = json.decode(response.body);
-      print(response.body);
-      if (jsonData != null) {
-        if (jsonData['status'] == 1) {
-          success = true;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Password updated, please check your email"),
-          ));
-        } else {
-          if (context.mounted) {
+      if (response.statusCode == 200) {
+        jsonData = json.decode(response.body);
+        print(response.body);
+        if (jsonData != null) {
+          if (jsonData['status'] == 1) {
+            success = true;
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(jsonData['message']),
+              content: Text("Password updated, please check your email"),
             ));
+          } else {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(jsonData['message']),
+              ));
+            }
           }
         }
+      } else {
+        print('error sending;');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                "Response status: ${response.statusCode}, Response body: ${response.body}"),
+          ));
+        }
       }
-    } else {
-      print('error sending;');
+    } catch (ex) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "Response status: ${response.statusCode}, Response body: ${response.body}"),
+          content: Text(ex.toString()),
         ));
       }
     }
+
     return success;
   }
 

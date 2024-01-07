@@ -1,27 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-
-import 'package:path/path.dart' as Path;
-import 'dart:typed_data';
-import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:bacteriaquantify/services/HistoryService.dart';
+import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
-import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
-import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
+import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
-import 'package:image_editor/image_editor.dart' hide ImageSource;
-import 'package:image_picker/image_picker.dart';
-import 'package:extended_image/extended_image.dart';
-import 'package:bacteriaquantify/utils/Media.dart';
-import 'package:bacteriaquantify/utils/MultipartRequest.dart';
-import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
-import 'auth_screen.dart';
-import 'models/DetactionResult.dart';
+import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
 class Result extends StatefulWidget {
@@ -33,14 +18,17 @@ class Result extends StatefulWidget {
 }
 
 class _ResultState extends State<Result> {
+  TextEditingController sampleNameController = TextEditingController();
   String imageURL = "";
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
     setState(() {
       imageURL = Config.API_HOST +
           "/userImages/" +
-          widget.detectionResult.message!.imageID! +
+          widget.detectionResult.imageID! +
           ".jpg";
     });
   }
@@ -55,72 +43,249 @@ class _ResultState extends State<Result> {
       body: CustomScrollView(slivers: [
         SliverFillRemaining(
             hasScrollBody: false,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Container(
-                //top nav
-                width: size!.width * 0.9,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    //top nav
+                    width: size!.width * 0.9,
 
-                height: 50,
-                child: Container(
-                    padding:
-                        const EdgeInsets.only(left: 40.0, top: 10, bottom: 10),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/arrow_back_ios_24px.png")),
-                          ),
-                          const Padding(
-                              padding: EdgeInsets.only(top: 0),
-                              child: Text(
-                                "Result",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20.0,
-                                    color: textBlue),
-                              )),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/home_24px_outlined.png")),
-                          ),
-                        ])),
-              ),
-              Container(
-                  width: size!.width * 0.9,
-                  //padding: EdgeInsets.only(top: 80, bottom: 60.0),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        /*AspectRatio(
+                    height: 50,
+                    child: Container(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const Dashboard()));
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/arrow_back_ios_24px.png")),
+                              ),
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 0),
+                                  child: Text(
+                                    "Result",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20.0,
+                                        color: textBlue),
+                                  )),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const Dashboard()));
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/home_24px_outlined.png")),
+                              ),
+                            ])),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      width: size!.width * 0.9,
+                      //padding: EdgeInsets.only(top: 80, bottom: 60.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            /*AspectRatio(
                           aspectRatio: 1,
                           child: buildImage(),
                         ),*/
-                        Container(
-                          alignment: Alignment.center, // use aligment
-                          child: Image.network(imageURL,
-                              height: 69, width: 134, fit: BoxFit.cover),
-                        ),
-                        const SizedBox(height: 24),
-                      ])),
-            ]))
+                            Container(
+                              alignment: Alignment.center, // use aligment
+                              child: Image.network(imageURL,
+                                  height: 320, width: 320, fit: BoxFit.cover),
+                            ),
+                            const SizedBox(height: 30),
+                            Container(
+                              padding: EdgeInsets.only(bottom: 20.0, top: 4),
+                              //width: size!.width * 0.9,
+                              child: TextFormField(
+                                autocorrect: false,
+                                controller: sampleNameController,
+                                decoration: InputDecoration(
+                                  fillColor: Color.fromRGBO(196, 231, 246, 1),
+                                  filled: true,
+                                  border: OutlineInputBorder(),
+                                  labelText: "Masukan Nama Sampel...",
+                                  labelStyle: TextStyle(
+                                    color: Color.fromRGBO(128, 179, 200, 1),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              child: Table(
+                                children: [
+                                  //This table row is for the table header which is static
+                                  TableRow(children: [
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        child: Text(
+                                          "Bacteria Species",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15.0,
+                                              color: textBlue),
+                                        ),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        child: Text(
+                                          "Total Colony",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15.0,
+                                              color: textBlue),
+                                        ),
+                                      ),
+                                    ),
+                                  ]),
+                                  // Using the spread operator to add the remaining table rows which have dynamic data
+                                  // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
+
+                                  ...widget.detectionResult.bacteries!
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                    (bacteria) {
+                                      return TableRow(
+                                          decoration: BoxDecoration(
+                                              color: Colors.transparent),
+                                          children: [
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4),
+                                                child: Text(
+                                                    bacteria.value.species!,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15.0,
+                                                        color: textBlue)),
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4),
+                                                child: Text(
+                                                    bacteria.value.totalColony
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15.0,
+                                                        color: textBlue)),
+                                              ),
+                                            ),
+                                          ]);
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Container(
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                        width: 60,
+                                        child: BigRoundIconButton(
+                                          onTap: () async {
+                                            print("Share");
+                                          },
+                                          icon: AssetImage(
+                                              "assets/share_24px.png"),
+                                        )),
+                                    Container(
+                                        width: 200,
+                                        child: BigRoundIconTextButton(
+                                            onTap: () async {
+                                              print("Save");
+                                              if (sampleNameController.text ==
+                                                  "") {
+                                                print('t3');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      "Please enter sample name"),
+                                                ));
+                                              } else {
+                                                saveResult();
+                                              }
+                                            },
+                                            icon: AssetImage(
+                                                "assets/save_alt_24px_outlined.png"),
+                                            title: "Save")),
+                                    Container(
+                                        width: 60,
+                                        child: BigRoundIconButton(
+                                          onTap: () async {
+                                            print("History");
+                                          },
+                                          icon: AssetImage(
+                                              "assets/history_24px.png"),
+                                        ))
+                                  ]),
+                            )
+                          ])),
+                ]))
       ]),
     ));
+  }
+
+  saveResult() async {
+    print('login;');
+    setState(() {
+      isLoading = true;
+    });
+    var success = await HistoryService(context: context)
+        .saveHistory(sampleNameController.text, widget.detectionResult);
+    setState(() {
+      isLoading = false;
+    });
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dashboard()),
+      );
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Failed to save"),
+        ));
+      }
+    }
   }
 }
