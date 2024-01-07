@@ -58,204 +58,213 @@ class _ResultState extends State<Result> {
       body: CustomScrollView(slivers: [
         SliverFillRemaining(
             hasScrollBody: false,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Container(
-                //top nav
-                width: size!.width * 0.9,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    //top nav
+                    width: size!.width * 0.9,
 
-                height: 50,
-                child: Container(
-                    padding:
-                        const EdgeInsets.only(left: 40.0, top: 10, bottom: 10),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/arrow_back_ios_24px.png")),
-                          ),
-                          const Padding(
-                              padding: EdgeInsets.only(top: 0),
-                              child: Text(
-                                "Result",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20.0,
-                                    color: textBlue),
-                              )),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/home_24px_outlined.png")),
-                          ),
-                        ])),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                  width: size!.width * 0.9,
-                  //padding: EdgeInsets.only(top: 80, bottom: 60.0),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        /*AspectRatio(
+                    height: 50,
+                    child: Container(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const Dashboard()));
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/arrow_back_ios_24px.png")),
+                              ),
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 0),
+                                  child: Text(
+                                    "Result",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20.0,
+                                        color: textBlue),
+                                  )),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const Dashboard()));
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/home_24px_outlined.png")),
+                              ),
+                            ])),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      width: size!.width * 0.9,
+                      //padding: EdgeInsets.only(top: 80, bottom: 60.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            /*AspectRatio(
                           aspectRatio: 1,
                           child: buildImage(),
                         ),*/
-                        Container(
-                          alignment: Alignment.center, // use aligment
-                          child: Image.network(imageURL,
-                              height: 320, width: 320, fit: BoxFit.cover),
-                        ),
-                        const SizedBox(height: 30),
-                        Container(
-                          padding: EdgeInsets.only(bottom: 20.0, top: 4),
-                          //width: size!.width * 0.9,
-                          child: TextFormField(
-                            autocorrect: false,
-                            controller: sampleNameController,
-                            decoration: InputDecoration(
-                              fillColor: Color.fromRGBO(196, 231, 246, 1),
-                              filled: true,
-                              border: OutlineInputBorder(),
-                              labelText: "Masukan Nama Sampel...",
-                              labelStyle: TextStyle(
-                                color: Color.fromRGBO(128, 179, 200, 1),
+                            Container(
+                              alignment: Alignment.center, // use aligment
+                              child: Image.network(imageURL,
+                                  height: 320, width: 320, fit: BoxFit.cover),
+                            ),
+                            const SizedBox(height: 30),
+                            Container(
+                              padding: EdgeInsets.only(bottom: 20.0, top: 4),
+                              //width: size!.width * 0.9,
+                              child: TextFormField(
+                                autocorrect: false,
+                                controller: sampleNameController,
+                                decoration: InputDecoration(
+                                  fillColor: Color.fromRGBO(196, 231, 246, 1),
+                                  filled: true,
+                                  border: OutlineInputBorder(),
+                                  labelText: "Masukan Nama Sampel...",
+                                  labelStyle: TextStyle(
+                                    color: Color.fromRGBO(128, 179, 200, 1),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          child: Table(
-                            children: [
-                              //This table row is for the table header which is static
-                              TableRow(children: [
-                                Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 4),
-                                    child: Text(
-                                      "Bacteria Species",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15.0,
-                                          color: textBlue),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              child: Table(
+                                children: [
+                                  //This table row is for the table header which is static
+                                  TableRow(children: [
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        child: Text(
+                                          "Bacteria Species",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15.0,
+                                              color: textBlue),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 4),
-                                    child: Text(
-                                      "Total Colony",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15.0,
-                                          color: textBlue),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4),
+                                        child: Text(
+                                          "Total Colony",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15.0,
+                                              color: textBlue),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ]),
-                              // Using the spread operator to add the remaining table rows which have dynamic data
-                              // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
+                                  ]),
+                                  // Using the spread operator to add the remaining table rows which have dynamic data
+                                  // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
 
-                              ...widget.detectionResult.message!.bacteries!
-                                  .asMap()
-                                  .entries
-                                  .map(
-                                (bacteria) {
-                                  return TableRow(
-                                      decoration: BoxDecoration(
-                                          color: Colors.transparent),
-                                      children: [
-                                        Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 4),
-                                            child: Text(bacteria.value.species!,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 15.0,
-                                                    color: textBlue)),
-                                          ),
-                                        ),
-                                        Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 4),
-                                            child: Text(
-                                                bacteria.value.totalColony
-                                                    .toString(),
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 15.0,
-                                                    color: textBlue)),
-                                          ),
-                                        ),
-                                      ]);
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                    width: 60,
-                                    child: BigRoundIconButton(
-                                      onTap: () async {
-                                        print("Share");
-                                      },
-                                      icon: AssetImage("assets/share_24px.png"),
-                                    )),
-                                Container(
-                                    width: 200,
-                                    child: BigRoundIconTextButton(
-                                        onTap: () async {
-                                          print("Save");
-                                        },
-                                        icon: AssetImage(
-                                            "assets/save_alt_24px_outlined.png"),
-                                        title: "Save")),
-                                Container(
-                                    width: 60,
-                                    child: BigRoundIconButton(
-                                      onTap: () async {
-                                        print("History");
-                                      },
-                                      icon:
-                                          AssetImage("assets/history_24px.png"),
-                                    ))
-                              ]),
-                        )
-                      ])),
-            ]))
+                                  ...widget.detectionResult.message!.bacteries!
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                    (bacteria) {
+                                      return TableRow(
+                                          decoration: BoxDecoration(
+                                              color: Colors.transparent),
+                                          children: [
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4),
+                                                child: Text(
+                                                    bacteria.value.species!,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15.0,
+                                                        color: textBlue)),
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 4),
+                                                child: Text(
+                                                    bacteria.value.totalColony
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15.0,
+                                                        color: textBlue)),
+                                              ),
+                                            ),
+                                          ]);
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Container(
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                        width: 60,
+                                        child: BigRoundIconButton(
+                                          onTap: () async {
+                                            print("Share");
+                                          },
+                                          icon: AssetImage(
+                                              "assets/share_24px.png"),
+                                        )),
+                                    Container(
+                                        width: 200,
+                                        child: BigRoundIconTextButton(
+                                            onTap: () async {
+                                              print("Save");
+                                            },
+                                            icon: AssetImage(
+                                                "assets/save_alt_24px_outlined.png"),
+                                            title: "Save")),
+                                    Container(
+                                        width: 60,
+                                        child: BigRoundIconButton(
+                                          onTap: () async {
+                                            print("History");
+                                          },
+                                          icon: AssetImage(
+                                              "assets/history_24px.png"),
+                                        ))
+                                  ]),
+                            )
+                          ])),
+                ]))
       ]),
     ));
   }

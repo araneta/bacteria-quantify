@@ -11,7 +11,7 @@ import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
+import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
 import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
@@ -71,199 +71,205 @@ class _PreviewState extends State<Preview> {
       body: CustomScrollView(slivers: [
         SliverFillRemaining(
             hasScrollBody: false,
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Container(
-                //top nav
-                width: size!.width * 0.9,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    //top nav
+                    width: size!.width * 0.9,
 
-                height: 50,
-                child: Container(
-                    padding:
-                        const EdgeInsets.only(left: 40.0, top: 10, bottom: 10),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Dashboard()),
-                              );
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/arrow_back_ios_24px.png")),
-                          ),
-                          const Padding(
-                              padding: EdgeInsets.only(top: 0),
-                              child: Text(
-                                "Preview",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20.0,
-                                    color: textBlue),
-                              )),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Dashboard()));
-                            }, // Image tapped
-                            child: const Image(
-                                width: 30,
-                                height: 30,
-                                image: AssetImage(
-                                    "assets/home_24px_outlined.png")),
-                          ),
-                        ])),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                  width: size!.width * 0.9,
-                  //padding: EdgeInsets.only(top: 80, bottom: 60.0),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        /*AspectRatio(
+                    height: 50,
+                    child: Container(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/arrow_back_ios_24px.png")),
+                              ),
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 0),
+                                  child: Text(
+                                    "Preview",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20.0,
+                                        color: textBlue),
+                                  )),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const Dashboard()));
+                                }, // Image tapped
+                                child: const Image(
+                                    width: 30,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/home_24px_outlined.png")),
+                              ),
+                            ])),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                      width: size!.width * 0.9,
+                      //padding: EdgeInsets.only(top: 80, bottom: 60.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            /*AspectRatio(
                           aspectRatio: 1,
                           child: buildImage(),
                         ),*/
-                        buildImage(),
-                        const SizedBox(height: 24),
-                        Column(
-                          children: <Widget>[
-                            showBrightness
-                                ? _buildBrightness()
-                                : const SizedBox(),
-                            showContrast ? _buildCon() : const SizedBox(),
-                            showSaturation ? _buildSat() : const SizedBox(),
-                          ],
-                        ),
-                        Container(
-                          width: size!.width * 0.8,
-                          padding: const EdgeInsets.only(
-                              left: 30.0, right: 30, top: 10, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print('brightness');
-                                  setState(() {
-                                    showBrightness = !showBrightness;
-                                    showContrast = false;
-                                    showSaturation = false;
-                                  });
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image:
-                                        AssetImage("assets/wb_sunny_24px.png")),
+                            buildImage(),
+                            const SizedBox(height: 24),
+                            Column(
+                              children: <Widget>[
+                                showBrightness
+                                    ? _buildBrightness()
+                                    : const SizedBox(),
+                                showContrast ? _buildCon() : const SizedBox(),
+                                showSaturation ? _buildSat() : const SizedBox(),
+                              ],
+                            ),
+                            Container(
+                              //width: size!.width * 0.8,
+                              padding: const EdgeInsets.only(
+                                  left: 30.0, right: 30, top: 10, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      print('brightness');
+                                      setState(() {
+                                        showBrightness = !showBrightness;
+                                        showContrast = false;
+                                        showSaturation = false;
+                                      });
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image: AssetImage(
+                                            "assets/wb_sunny_24px.png")),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      print('contrast');
+                                      setState(() {
+                                        showBrightness = false;
+                                        showContrast = !showContrast;
+                                        showSaturation = false;
+                                      });
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image:
+                                            AssetImage("assets/iso_24px.png")),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      print('saturation');
+                                      setState(() {
+                                        showBrightness = false;
+                                        showContrast = false;
+                                        showSaturation = !showSaturation;
+                                      });
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image: AssetImage(
+                                            "assets/invert_colors_24px_outlined.png")),
+                                  )
+                                ],
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  print('contrast');
-                                  setState(() {
-                                    showBrightness = false;
-                                    showContrast = !showContrast;
-                                    showSaturation = false;
-                                  });
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image: AssetImage("assets/iso_24px.png")),
+                            ),
+                            Container(
+                              //width: size!.width * 0.8,
+                              padding: const EdgeInsets.only(
+                                  left: 30.0, right: 30, top: 10, bottom: 50),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      print('flip');
+                                      flip();
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image: AssetImage(
+                                            "assets/flip_24px_outlined.png")),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      print('rotate');
+                                      rotate(false);
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image: AssetImage(
+                                            "assets/rotate_left_24px_outlined.png")),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      print('crop');
+                                      await crop();
+                                    }, // Image tapped
+                                    child: const Image(
+                                        width: 30,
+                                        height: 30,
+                                        image: AssetImage(
+                                            "assets/crop_24px_outlined.png")),
+                                  )
+                                ],
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  print('saturation');
-                                  setState(() {
-                                    showBrightness = false;
-                                    showContrast = false;
-                                    showSaturation = !showSaturation;
-                                  });
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image: AssetImage(
-                                        "assets/invert_colors_24px_outlined.png")),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: size!.width * 0.8,
-                          padding: const EdgeInsets.only(
-                              left: 30.0, right: 30, top: 10, bottom: 50),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  print('flip');
-                                  flip();
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image: AssetImage(
-                                        "assets/flip_24px_outlined.png")),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  print('rotate');
-                                  rotate(false);
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image: AssetImage(
-                                        "assets/rotate_left_24px_outlined.png")),
-                              ),
-                              GestureDetector(
-                                onTap: () async {
-                                  print('crop');
-                                  await crop();
-                                }, // Image tapped
-                                child: const Image(
-                                    width: 30,
-                                    height: 30,
-                                    image: AssetImage(
-                                        "assets/crop_24px_outlined.png")),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                            width: size!.width * 0.6,
-                            padding: const EdgeInsets.only(
-                                left: 30.0, right: 30, top: 10, bottom: 50),
-                            child: BigRoundButton(
-                                onTap: () async {
-                                  print("calculate");
+                            ),
+                            Container(
+                                width: size!.width * 0.6,
+                                padding: const EdgeInsets.only(
+                                    left: 30.0, right: 30, top: 10, bottom: 50),
+                                child: BigRoundButton(
+                                    onTap: () async {
+                                      print("calculate");
 
-                                  if (isDone) {
-                                    print("calculatex1");
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    print("calculatex2");
-                                    if (!isButtonDisabled) {
-                                      print("calculatex4");
-                                      uploadImageWithHttp()!;
-                                    }
-                                  }
-                                },
-                                title: "Calculate"))
-                      ])),
-            ]))
+                                      if (isDone) {
+                                        print("calculatex1");
+                                        Navigator.of(context).pop();
+                                      } else {
+                                        print("calculatex2");
+                                        if (!isButtonDisabled) {
+                                          print("calculatex4");
+                                          uploadImageWithHttp()!;
+                                        }
+                                      }
+                                    },
+                                    title: "Calculate"))
+                          ])),
+                ]))
       ]),
     ));
   }
