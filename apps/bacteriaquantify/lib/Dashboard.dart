@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Preview.dart';
 
+import 'SampleHistory.dart';
 import 'auth_screen.dart';
 import 'models/User.dart';
 
@@ -163,6 +164,12 @@ class _DashboardState extends State<Dashboard> {
                                   child: BigRoundIconTextButton(
                                       onTap: () async {
                                         print("History photo");
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SampleHistory()),
+                                        );
                                       },
                                       icon:
                                           AssetImage("assets/history_24px.png"),

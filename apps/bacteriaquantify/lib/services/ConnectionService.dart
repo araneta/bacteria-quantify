@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/models/User.dart';
-import 'package:bacteriaquantify/models/ItemType.dart';
-import 'package:bacteriaquantify/models/MenuInfo.dart';
-import 'package:bacteriaquantify/models/UpdateSalesOrderItem.dart';
-import 'package:bacteriaquantify/models/SalesOrderDetail.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
