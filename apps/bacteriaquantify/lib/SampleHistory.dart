@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bacteriaquantify/DetailHistory.dart';
 import 'package:bacteriaquantify/models/DetectionResultResponse.dart';
 import 'package:bacteriaquantify/services/ConnectionService.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
@@ -130,6 +131,9 @@ class _SampleHistoryState extends State<SampleHistory> {
                             return InkWell(
                               onTap: () {
                                 print("dasdsad");
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailHistory(history: sample.value)));
                               },
                               child: Container(
                                   margin: EdgeInsets.symmetric(
