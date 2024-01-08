@@ -1,4 +1,4 @@
-import 'package:bacteriaquantify/SampleHistory.dart';
+import 'package:bacteriaquantify/services/ConnectionService.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
@@ -7,28 +7,51 @@ import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
 import 'Config.dart';
-import 'models/DetectionResult.dart';
+import 'SampleHistory.dart';
+import 'models/Bacteries.dart';
+import 'models/History.dart';
 import 'models/User.dart';
 
-class Result extends StatefulWidget {
-  final DetectionResult detectionResult;
-  Result({required this.detectionResult});
+class DetailHistory extends StatefulWidget {
+  final History history;
+  DetailHistory({required this.history});
 
   @override
-  State<Result> createState() => _ResultState();
+  State<DetailHistory> createState() => _DetailHistoryState();
 }
 
-class _ResultState extends State<Result> {
-  TextEditingController sampleNameController = TextEditingController();
+class _DetailHistoryState extends State<DetailHistory> {
   String imageURL = "";
   bool isLoading = false;
+  bool isConnected = false;
+  var bacteries = <Bacteries>[];
 
   @override
   void initState() {
     super.initState();
     setState(() {
       imageURL =
-          "${Config.API_HOST}/userImages/${widget.detectionResult.imageID!}.jpg";
+          "${Config.API_HOST}/userImages/${widget.history.localFileImage!}.jpg";
+    });
+
+    ConnectionService(context: context).check().then((res) {
+      setState(() {
+        isConnected = res;
+      });
+    });
+    getDetailHistories();
+  }
+
+  getDetailHistories() async {
+    setState(() {
+      isLoading = true;
+    });
+    var newbacteries = await HistoryService(context: context)
+        .getDetailHistory(widget.history.iD!);
+
+    setState(() {
+      isLoading = false;
+      bacteries = newbacteries;
     });
   }
 
@@ -59,8 +82,11 @@ class _ResultState extends State<Result> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SampleHistory()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -68,10 +94,10 @@ class _ResultState extends State<Result> {
                                     image: AssetImage(
                                         "assets/arrow_back_ios_24px.png")),
                               ),
-                              const Padding(
+                              Padding(
                                   padding: EdgeInsets.only(top: 0),
                                   child: Text(
-                                    "Result",
+                                    widget.history.sampleName!,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
@@ -109,26 +135,8 @@ class _ResultState extends State<Result> {
                               child: Image.network(imageURL,
                                   height: 320, width: 320, fit: BoxFit.cover),
                             ),
-                            const SizedBox(height: 30),
-                            Container(
-                              padding: EdgeInsets.only(bottom: 20.0, top: 4),
-                              //width: size!.width * 0.9,
-                              child: TextFormField(
-                                autocorrect: false,
-                                controller: sampleNameController,
-                                decoration: InputDecoration(
-                                  fillColor: Color.fromRGBO(196, 231, 246, 1),
-                                  filled: true,
-                                  border: OutlineInputBorder(),
-                                  labelText: "Masukan Nama Sampel...",
-                                  labelStyle: TextStyle(
-                                    color: Color.fromRGBO(128, 179, 200, 1),
-                                  ),
-                                ),
-                              ),
-                            ),
                             const SizedBox(
-                              height: 10,
+                              height: 30,
                             ),
                             Container(
                               child: Table(
@@ -165,10 +173,7 @@ class _ResultState extends State<Result> {
                                   // Using the spread operator to add the remaining table rows which have dynamic data
                                   // Be sure to use .asMap().entries.map if you want to access their indexes and objectName.map() if you have no interest in the items index.
 
-                                  ...widget.detectionResult.bacteries!
-                                      .asMap()
-                                      .entries
-                                      .map(
+                                  ...bacteries!.asMap().entries.map(
                                     (bacteria) {
                                       return TableRow(
                                           decoration: BoxDecoration(
@@ -220,47 +225,22 @@ class _ResultState extends State<Result> {
                                   children: [
                                     Container(
                                         width: 60,
-                                        child: BigRoundIconButton(
-                                          onTap: () async {
-                                            print("Share");
-                                          },
-                                          icon: AssetImage(
-                                              "assets/share_24px.png"),
+                                        child: SizedBox(
+                                          height: 10,
                                         )),
                                     Container(
                                         width: 200,
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
-                                              print("Save");
-                                              if (sampleNameController.text ==
-                                                  "") {
-                                                print('t3');
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      "Please enter sample name"),
-                                                ));
-                                              } else {
-                                                saveResult();
-                                              }
+                                              print("share");
                                             },
                                             icon: AssetImage(
-                                                "assets/save_alt_24px_outlined.png"),
-                                            title: "Save")),
+                                                "assets/share_24px.png"),
+                                            title: "Share")),
                                     Container(
                                         width: 60,
-                                        child: BigRoundIconButton(
-                                          onTap: () async {
-                                            print("History");
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SampleHistory()),
-                                            );
-                                          },
-                                          icon: AssetImage(
-                                              "assets/history_24px.png"),
+                                        child: SizedBox(
+                                          height: 10,
                                         ))
                                   ]),
                             )
@@ -268,29 +248,5 @@ class _ResultState extends State<Result> {
                 ]))
       ]),
     ));
-  }
-
-  saveResult() async {
-    print('login;');
-    setState(() {
-      isLoading = true;
-    });
-    var success = await HistoryService(context: context)
-        .saveHistory(sampleNameController.text, widget.detectionResult);
-    setState(() {
-      isLoading = false;
-    });
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SampleHistory()),
-      );
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Failed to save"),
-        ));
-      }
-    }
   }
 }
