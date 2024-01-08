@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"fmt"
-
 	"bacteriapp/common"
 	"bacteriapp/dto"
+	"fmt"
 	"path/filepath"
+	"strconv"
 
 	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris/v12"
@@ -287,8 +287,11 @@ func (c *UserController) GetHistories(ctx iris.Context) {
 
 		return
 	}
+	//var respond CommonRespond2
 
+	//respond.Status = 1
 	result, err := c.ServiceProvider.AppSvc.GetHistories(userID)
+	//respond.Message = result
 	if err != nil {
 		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
 			Title("Not found").DetailErr(err))
@@ -350,4 +353,39 @@ func (c *UserController) UploadDetect(ctx iris.Context) {
 	respond.Message = result
 
 	ctx.JSON(respond)
+}
+
+func (c *UserController) GetDetailHistory(ctx iris.Context) {
+	user := ctx.Values().Get("jwt").(*jwt.Token)
+
+	payload := user.Claims.(jwt.MapClaims)
+	userID := int(payload["userID"].(float64))
+
+	_, errUser := c.ServiceProvider.UserSvc.Find(userID)
+	if errUser != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(errUser))
+
+		return
+	}
+	sID := ctx.Params().Get("ID")
+	ID, err := strconv.Atoi(sID)
+	if err != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Conversion error").DetailErr(err))
+		return
+	}
+	//var respond CommonRespond2
+
+	//respond.Status = 1
+	result, err := c.ServiceProvider.AppSvc.GetDetailHistory(userID, ID)
+	//respond.Message = result
+	if err != nil {
+		ctx.StopWithProblem(iris.StatusBadRequest, iris.NewProblem().
+			Title("Not found").DetailErr(err))
+
+		return
+	} else {
+		ctx.JSON(iris.Map{"status": "1", "message": result})
+	}
 }
