@@ -71,6 +71,7 @@ func (s *AppService) SaveHistory(UserID int, form *dto.HistoryEntryForm) (*model
 	var entity = new(model.History)
 	//set new fields
 	copier.Copy(entity, &form)
+	entity.UserID = int32(UserID)
 	errCreate := query.History.Create(entity)
 	if errCreate != nil {
 		return nil, errCreate

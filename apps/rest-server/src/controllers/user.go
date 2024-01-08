@@ -253,30 +253,9 @@ func (c *UserController) SaveHistory(ctx iris.Context) {
 	}
 	// upload single file
 	var respond CommonRespond2
-	respond.Status = 1
-	file, fileHeader, err := ctx.FormFile("file")
-	if err != nil {
-		ctx.StopWithError(iris.StatusBadRequest, err)
-		return
-	}
-	defer file.Close()
-
-	uuid := uuid.NewV4().String()
-	// Upload the file to specific destination.
-	localFile := uuid + ".jpg"
-
-	dest := filepath.Join(c.UserImagesPath, localFile)
-	_, errsave := ctx.SaveFormFile(fileHeader, dest)
-	if errsave != nil {
-		//panic(err)
-		respond.Status = 0
-		respond.Message = errsave.Error()
-		ctx.JSON(respond)
-		return
-	}
 
 	respond.Status = 1
-	form.LocalFileImage = localFile
+
 	//save the image id / avatar
 	updatedUser, errUpdate := c.ServiceProvider.AppSvc.SaveHistory(int(localuser.ID), &form)
 
