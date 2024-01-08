@@ -252,6 +252,12 @@ class _ResultState extends State<Result> {
                                         child: BigRoundIconButton(
                                           onTap: () async {
                                             print("History");
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SampleHistory()),
+                                            );
                                           },
                                           icon: AssetImage(
                                               "assets/history_24px.png"),
