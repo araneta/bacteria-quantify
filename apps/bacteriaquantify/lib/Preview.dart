@@ -444,7 +444,7 @@ class _PreviewState extends State<Preview> {
     }
     final Rect? rect = state.getCropRect();
     if (rect == null) {
-      showToast('The crop rect is null.');
+      print('The crop rect is null.');
       return;
     }
     final EditActionDetails action = state.editAction!;
@@ -460,47 +460,56 @@ class _PreviewState extends State<Preview> {
       return;
     }
 
-    final ImageEditorOption option = ImageEditorOption();
+    //final ImageEditorOption option = ImageEditorOption();
 
-    option.addOption(ClipOption.fromRect(rect));
-    option.addOption(
-        FlipOption(horizontal: flipHorizontal, vertical: flipVertical));
-    if (action.hasRotateAngle) {
-      option.addOption(RotateOption(radian.toInt()));
-    }
+    //option.addOption(ClipOption.fromRect(rect));
+    //option.addOption(
+    //FlipOption(horizontal: flipHorizontal, vertical: flipVertical));
+    //if (action.hasRotateAngle) {
+    //option.addOption(RotateOption(radian.toInt()));
+    //}
 /*
     option.addOption(ColorOption.saturation(sat));
     option.addOption(ColorOption.brightness(bright));
     option.addOption(ColorOption.contrast(con));
 */
-    option.outputFormat = const OutputFormat.png(88);
+    //option.outputFormat = const OutputFormat.png(88);
 
-    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
+    //print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
     print("uuh1");
     final DateTime start = DateTime.now();
     print("uuh2");
     try {
+      /*
       final Uint8List? result = await ImageEditor.editImage(
         image: img,
         imageEditorOption: option,
-      );
-      print("uuh3");
-      print('result.length = ${result?.length}');
+      );*/
+      if (action.needCrop) {
+        var image = _image!.clone();
+        var result = imgLib.copyCrop(image,
+            x: rect.left.toInt(),
+            y: rect.top.toInt(),
+            width: rect.width.toInt(),
+            height: rect.height.toInt());
 
-      final Duration diff = DateTime.now().difference(start);
+        print("uuh3");
+        print('result.length = ${result?.length}');
 
-      print('image_editor time : $diff');
-      showToast('handle duration: $diff',
-          duration: const Duration(seconds: 5), dismissOtherToast: true);
-      print("uuh4");
-      if (result == null) return;
-      print("uuh5");
-      setState(() {
-        _image = imgLib.decodeImage(result);
-        _imageBytes = imgLib.encodeJpg(_image!);
-      });
-      print("uuh6");
-      showPreviewDialog(result);
+        final Duration diff = DateTime.now().difference(start);
+
+        print('image_editor time : $diff');
+
+        print("uuh4");
+        if (result == null) return;
+        print("uuh5");
+        setState(() {
+          //_image = result;
+          _imageBytes = imgLib.encodeJpg(result!);
+        });
+        print("uuh6");
+        showPreviewDialog(result.buffer.asUint8List());
+      }
     } catch (ex) {
       print(ex);
     }
@@ -558,6 +567,10 @@ class _PreviewState extends State<Preview> {
   }
 
   uploadImageWithHttp() async {
+    final ExtendedImageEditorState? state = editorKey.currentState;
+    if (state == null) {
+      return;
+    }
     print("uploadImageWithHttp");
     User user = UserPreferences.getUser();
     final url = '${Config.API_HOST}/api/upload-detect';
@@ -584,10 +597,18 @@ class _PreviewState extends State<Preview> {
       request.headers['Authorization'] = "Bearer ${user.token}";
       request.fields['form_key'] = 'form_value';
       print("uploadImageWithHttp");
+
       request.files.add(
-        await http.MultipartFile.fromPath(
+        /*await http.MultipartFile.fromPath(
           'file',
           localFileURL,
+          contentType: MediaType('image', 'jpeg'),
+        ),*/
+        await http.MultipartFile.fromBytes(
+          'file',
+          //_imageBytes!.buffer.asUint8List(),
+          state.rawImageData.buffer.asUint8List(),
+          filename: 'photo.jpg',
           contentType: MediaType('image', 'jpeg'),
         ),
       );
