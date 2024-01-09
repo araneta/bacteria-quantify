@@ -61,6 +61,7 @@ class _PreviewState extends State<Preview> {
   double con = 100;
   imgLib.Image? _image;
   Uint8List? _imageBytes;
+  bool isEditImage = false;
 
   @override
   void initState() {
@@ -255,7 +256,7 @@ class _PreviewState extends State<Preview> {
                                   GestureDetector(
                                     onTap: () async {
                                       print('crop');
-                                      await crop();
+                                      crop();
                                     }, // Image tapped
                                     child: const Image(
                                         width: 30,
@@ -298,7 +299,8 @@ class _PreviewState extends State<Preview> {
       height: 320,
       width: 320,
       extendedImageEditorKey: editorKey,
-      mode: ExtendedImageMode.editor,
+      //mode: ExtendedImageMode.editor,
+      mode: isEditImage ? ExtendedImageMode.editor : ExtendedImageMode.none,
       fit: BoxFit.contain,
       initEditorConfigHandler: (_) => EditorConfig(
         maxScale: 8.0,
@@ -358,7 +360,7 @@ class _PreviewState extends State<Preview> {
     print("changeSaturation");
 
     // final img = await getImageFromEditorKey(editorKey);
-//https://cbtdev.net/dart-image-library/
+    //https://cbtdev.net/dart-image-library/
     try {
       var image = _image!.clone();
       print(mode);
@@ -436,46 +438,26 @@ class _PreviewState extends State<Preview> {
     );
   }
 
-  Future<void> crop([bool test = false]) async {
+  getCropImage() {
     print("uuh");
     final ExtendedImageEditorState? state = editorKey.currentState;
     if (state == null) {
-      return;
+      return null;
     }
     final Rect? rect = state.getCropRect();
     if (rect == null) {
       print('The crop rect is null.');
-      return;
+      return null;
     }
     final EditActionDetails action = state.editAction!;
-    final double radian = action.rotateAngle;
-
-    final bool flipHorizontal = action.flipY;
-    final bool flipVertical = action.flipX;
     // final img = await getImageFromEditorKey(editorKey);
     final Uint8List? img = state.rawImageData;
 
     if (img == null) {
       showToast('The img is null.');
-      return;
+      return null;
     }
 
-    //final ImageEditorOption option = ImageEditorOption();
-
-    //option.addOption(ClipOption.fromRect(rect));
-    //option.addOption(
-    //FlipOption(horizontal: flipHorizontal, vertical: flipVertical));
-    //if (action.hasRotateAngle) {
-    //option.addOption(RotateOption(radian.toInt()));
-    //}
-/*
-    option.addOption(ColorOption.saturation(sat));
-    option.addOption(ColorOption.brightness(bright));
-    option.addOption(ColorOption.contrast(con));
-*/
-    //option.outputFormat = const OutputFormat.png(88);
-
-    //print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
     print("uuh1");
     final DateTime start = DateTime.now();
     print("uuh2");
@@ -486,8 +468,10 @@ class _PreviewState extends State<Preview> {
         imageEditorOption: option,
       );*/
       if (action.needCrop) {
-        var image = _image!.clone();
-        var result = imgLib.copyCrop(image,
+        //var image = _image!.clone();
+        final image = imgLib.decodeJpg(img);
+
+        var result = imgLib.copyCrop(image!,
             x: rect.left.toInt(),
             y: rect.top.toInt(),
             width: rect.width.toInt(),
@@ -496,31 +480,52 @@ class _PreviewState extends State<Preview> {
         print("uuh3");
         print('result.length = ${result?.length}');
 
-        final Duration diff = DateTime.now().difference(start);
-
-        print('image_editor time : $diff');
-
         print("uuh4");
-        if (result == null) return;
+        if (result == null) return null;
         print("uuh5");
-        setState(() {
+        /*setState(() {
           //_image = result;
           _imageBytes = imgLib.encodeJpg(result!);
         });
         print("uuh6");
-        showPreviewDialog(result.buffer.asUint8List());
+        showPreviewDialog(_imageBytes!);*/
+        return imgLib.encodeJpg(result!);
+      } else {
+        return _imageBytes;
       }
     } catch (ex) {
       print(ex);
     }
+    return null;
   }
 
-  void flip() {
+  void flip() async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+      await new Future.delayed(const Duration(seconds: 1));
+    }
+
     editorKey.currentState?.flip();
   }
 
-  void rotate(bool right) {
+  void rotate(bool right) async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+      await new Future.delayed(const Duration(seconds: 1));
+    }
     editorKey.currentState?.rotate(right: right);
+  }
+
+  void crop() async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+    }
   }
 
   void showPreviewDialog(Uint8List image) {
@@ -607,7 +612,7 @@ class _PreviewState extends State<Preview> {
         await http.MultipartFile.fromBytes(
           'file',
           //_imageBytes!.buffer.asUint8List(),
-          state.rawImageData.buffer.asUint8List(),
+          getCropImage(),
           filename: 'photo.jpg',
           contentType: MediaType('image', 'jpeg'),
         ),

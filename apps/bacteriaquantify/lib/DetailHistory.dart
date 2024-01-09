@@ -133,7 +133,9 @@ class _DetailHistoryState extends State<DetailHistory> {
                             Container(
                               alignment: Alignment.center, // use aligment
                               child: Image.network(imageURL,
-                                  height: 320, width: 320, fit: BoxFit.cover),
+                                  //height: 320,
+                                  width: size!.width * 0.8,
+                                  fit: BoxFit.cover),
                             ),
                             const SizedBox(
                               height: 30,

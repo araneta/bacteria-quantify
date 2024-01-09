@@ -90,7 +90,7 @@ class _ResultState extends State<Result> {
                               ),
                             ])),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Container(
@@ -107,7 +107,9 @@ class _ResultState extends State<Result> {
                             Container(
                               alignment: Alignment.center, // use aligment
                               child: Image.network(imageURL,
-                                  height: 320, width: 320, fit: BoxFit.cover),
+                                  //height: 320,
+                                  width: size!.width * 0.8,
+                                  fit: BoxFit.cover),
                             ),
                             const SizedBox(height: 30),
                             Container(
@@ -116,7 +118,7 @@ class _ResultState extends State<Result> {
                               child: TextFormField(
                                 autocorrect: false,
                                 controller: sampleNameController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   fillColor: Color.fromRGBO(196, 231, 246, 1),
                                   filled: true,
                                   border: OutlineInputBorder(),
