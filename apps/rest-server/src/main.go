@@ -151,6 +151,7 @@ func main() {
 	}
 	API := app.Party("/api")
 	{
+		API.Get("/test", adminCont.Test)
 		API.Post("/register", adminCont.AddUser)
 		API.Post("/reset-password", userCont.ResetPassword)
 		//admin---------------
@@ -169,6 +170,7 @@ func main() {
 		API.Delete("/admin/users/{ID}", j.Serve, adminCont.DeleteUser)
 
 		API.Post("/histories", j.Serve, userCont.SaveHistory)
+		API.Get("/histories/{ID}", j.Serve, userCont.GetDetailHistory)
 		API.Get("/histories", j.Serve, userCont.GetHistories)
 
 		API.Post("/upload-detect", j.Serve, userCont.UploadDetect)

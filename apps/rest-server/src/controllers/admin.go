@@ -11,7 +11,7 @@ import (
 )
 
 func (c *AdminController) Test(ctx iris.Context) {
-	ctx.JSON(iris.Map{"status": "1", "message": c.ServiceProvider.AppSvc.Test()})
+	ctx.JSON(iris.Map{"status": "1", "message": ""})
 }
 
 func (c *AdminController) SearchUsers(ctx iris.Context) {
