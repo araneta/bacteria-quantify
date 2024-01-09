@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bacteriaquantify/models/DetectionResultResponse.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:image/image.dart' as imgLib;
 
 import 'package:path/path.dart' as Path;
 import 'dart:typed_data';
@@ -54,10 +55,18 @@ class _PreviewState extends State<Preview> {
   String localFileURL = "";
   //return from server
   String fileurl = "";
+  Uint8List? bytes;
+  double sat = 1;
+  double bright = 1;
+  double con = 100;
+  imgLib.Image? _image;
+  Uint8List? _imageBytes;
 
   @override
   void initState() {
     super.initState();
+    _image = imgLib.Image(width: 250, height: 250);
+    _imageBytes = imgLib.encodeJpg(_image!);
 
     _pick(widget.source);
   }
@@ -140,15 +149,23 @@ class _PreviewState extends State<Preview> {
                         ),*/
                             buildImage(),
                             const SizedBox(height: 24),
-                            Column(
-                              children: <Widget>[
-                                showBrightness
-                                    ? _buildBrightness()
-                                    : const SizedBox(),
-                                showContrast ? _buildCon() : const SizedBox(),
-                                showSaturation ? _buildSat() : const SizedBox(),
-                              ],
-                            ),
+                            SliderTheme(
+                                data: SliderThemeData(
+                                    showValueIndicator:
+                                        ShowValueIndicator.onlyForContinuous),
+                                child: Column(
+                                  children: <Widget>[
+                                    showBrightness
+                                        ? _buildBrightness()
+                                        : const SizedBox(),
+                                    showContrast
+                                        ? _buildCon()
+                                        : const SizedBox(),
+                                    showSaturation
+                                        ? _buildSat()
+                                        : const SizedBox(),
+                                  ],
+                                )),
                             Container(
                               //width: size!.width * 0.8,
                               padding: const EdgeInsets.only(
@@ -276,6 +293,20 @@ class _PreviewState extends State<Preview> {
   }
 
   Widget buildImage() {
+    return ExtendedImage.memory(
+      _imageBytes!,
+      height: 320,
+      width: 320,
+      extendedImageEditorKey: editorKey,
+      mode: ExtendedImageMode.editor,
+      fit: BoxFit.contain,
+      initEditorConfigHandler: (_) => EditorConfig(
+        maxScale: 8.0,
+        //cropRectPadding: const EdgeInsets.all(20.0),
+        hitTestSize: 20.0,
+        //cropAspectRatio: 2 / 1,
+      ),
+    );
     return ExtendedImage(
       image: provider,
       height: 320,
@@ -307,60 +338,65 @@ class _PreviewState extends State<Preview> {
     dynamic file = File(result.path);
     print("pick4");
     provider = FileImage(file);
+
     print("pick5");
     provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
+    Uint8List bytes = file.readAsBytesSync();
+    ByteBuffer buffer = bytes.buffer;
+    //print(bytes);
+
     setState(() {
       isButtonDisabled = false;
       localFileURL = result.path;
+      //
+      _imageBytes = bytes;
+      _image = imgLib.decodeImage(bytes);
     });
   }
 
-  double sat = 1;
-  double bright = 1;
-  double con = 1;
-
-  void changeSaturation(double val) async {
-    final ExtendedImageEditorState? cstate = editorKey.currentState;
-    if (cstate == null) {
-      return;
-    }
+  void changeBCS(int mode, double val) async {
+    print("changeSaturation");
 
     // final img = await getImageFromEditorKey(editorKey);
-    final Uint8List? img = cstate.rawImageData;
+//https://cbtdev.net/dart-image-library/
+    try {
+      var image = _image!.clone();
+      print(mode);
+      print(val);
+      if (mode == 2) {
+        image = imgLib.contrast(image!, contrast: val);
+      } else if (mode == 1) {
+        image = imgLib.adjustColor(image!, brightness: val);
+      } else if (mode == 3) {
+        image = imgLib.adjustColor(image!, saturation: val);
+      }
 
-    if (img == null) {
-      showToast('The img is null.');
-      return;
+      print("xx5");
+      setState(() {
+        _imageBytes = imgLib.encodeJpg(image);
+        //_image = image;
+      });
+      print("xx7");
+    } catch (ex) {
+      print(ex);
     }
-
-    final ImageEditorOption option = ImageEditorOption();
-    option.addOption(ColorOption.saturation(val));
-    option.outputFormat = const OutputFormat.png(88);
-
-    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
-
-    final DateTime start = DateTime.now();
-    final Uint8List? result = await ImageEditor.editImage(
-      image: img,
-      imageEditorOption: option,
-    );
-
-    print('result.length = ${result?.length}');
   }
 
   Widget _buildSat() {
     return Slider(
       label: 'sat : ${sat.toStringAsFixed(2)}',
       onChanged: (double value) {
-        print(value);
+        //print(value);
         setState(() {
           sat = value;
         });
-        crop(true);
+      },
+      onChangeEnd: (double newValue) {
+        changeBCS(3, newValue);
       },
       value: sat,
-      min: 0,
-      max: 2,
+      min: -2,
+      max: 4,
     );
   }
 
@@ -368,11 +404,13 @@ class _PreviewState extends State<Preview> {
     return Slider(
       label: 'brightness : ${bright.toStringAsFixed(2)}',
       onChanged: (double value) {
-        print(value);
+        //print(value);
         setState(() {
           bright = value;
         });
-        crop(true);
+      },
+      onChangeEnd: (double newValue) {
+        changeBCS(1, newValue);
       },
       value: bright,
       min: 0,
@@ -384,19 +422,22 @@ class _PreviewState extends State<Preview> {
     return Slider(
       label: 'con : ${con.toStringAsFixed(2)}',
       onChanged: (double value) {
-        print(value);
+        //print(value);
         setState(() {
           con = value;
         });
-        crop(true);
+      },
+      onChangeEnd: (double newValue) {
+        changeBCS(2, newValue);
       },
       value: con,
       min: 0,
-      max: 4,
+      max: 200,
     );
   }
 
   Future<void> crop([bool test = false]) async {
+    print("uuh");
     final ExtendedImageEditorState? state = editorKey.currentState;
     if (state == null) {
       return;
@@ -427,32 +468,42 @@ class _PreviewState extends State<Preview> {
     if (action.hasRotateAngle) {
       option.addOption(RotateOption(radian.toInt()));
     }
-
+/*
     option.addOption(ColorOption.saturation(sat));
     option.addOption(ColorOption.brightness(bright));
     option.addOption(ColorOption.contrast(con));
-
+*/
     option.outputFormat = const OutputFormat.png(88);
 
     print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
-
+    print("uuh1");
     final DateTime start = DateTime.now();
-    final Uint8List? result = await ImageEditor.editImage(
-      image: img,
-      imageEditorOption: option,
-    );
+    print("uuh2");
+    try {
+      final Uint8List? result = await ImageEditor.editImage(
+        image: img,
+        imageEditorOption: option,
+      );
+      print("uuh3");
+      print('result.length = ${result?.length}');
 
-    print('result.length = ${result?.length}');
+      final Duration diff = DateTime.now().difference(start);
 
-    final Duration diff = DateTime.now().difference(start);
-
-    print('image_editor time : $diff');
-    showToast('handle duration: $diff',
-        duration: const Duration(seconds: 5), dismissOtherToast: true);
-
-    if (result == null) return;
-
-    showPreviewDialog(result);
+      print('image_editor time : $diff');
+      showToast('handle duration: $diff',
+          duration: const Duration(seconds: 5), dismissOtherToast: true);
+      print("uuh4");
+      if (result == null) return;
+      print("uuh5");
+      setState(() {
+        _image = imgLib.decodeImage(result);
+        _imageBytes = imgLib.encodeJpg(_image!);
+      });
+      print("uuh6");
+      showPreviewDialog(result);
+    } catch (ex) {
+      print(ex);
+    }
   }
 
   void flip() {
