@@ -6,7 +6,7 @@ import 'package:bacteriaquantify/services/ConnectionService.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
 
 import 'package:bacteriaquantify/style.dart';
@@ -124,10 +124,8 @@ class _SampleHistoryState extends State<SampleHistory> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           ...histories.asMap().entries.map((sample) {
-                            var imageURL = Config.API_HOST +
-                                "/userImages/" +
-                                sample.value.localFileImage! +
-                                ".jpg";
+                            var imageURL =
+                                "${Config.DETECTOR_API_IMAGE_BASE_URL}/${sample.value.localFileImage!}.jpg";
                             return InkWell(
                               onTap: () {
                                 print("dasdsad");
@@ -142,7 +140,7 @@ class _SampleHistoryState extends State<SampleHistory> {
                                   /*
                                             height: 30,*/
                                   padding:
-                                      const EdgeInsets.fromLTRB(30, 8, 30, 8),
+                                      const EdgeInsets.fromLTRB(30, 10, 30, 10),
                                   decoration: BoxDecoration(
                                     color: textBlue,
                                     borderRadius: BorderRadius.circular(24.0),
@@ -151,10 +149,31 @@ class _SampleHistoryState extends State<SampleHistory> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: <Widget>[
-                                        Image(
-                                            width: 99,
-                                            height: 84,
-                                            image: NetworkImage(imageURL)),
+                                        CachedNetworkImage(
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
+                                            progressIndicatorBuilder: (context,
+                                                    url, progress) =>
+                                                Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: progress.progress,
+                                                  ),
+                                                ),
+                                            imageUrl: imageURL,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                                      width: 99,
+                                                      height: 84,
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    )),
                                         Padding(
                                           padding: EdgeInsets.only(
                                               left:

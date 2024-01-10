@@ -16,6 +16,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:bacteriaquantify/utils/MultipartRequest.dart';
 import 'Config.dart';
 import 'Result.dart';
+import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
 class Preview extends StatefulWidget {
@@ -595,7 +596,7 @@ class _PreviewState extends State<Preview> {
   uploadImageWithHttp() async {
     print("uploadImageWithHttp");
     User user = UserPreferences.getUser();
-    final url = '${Config.API_HOST}/api/upload-detect';
+    final url = Config.DETECTOR_API_URL;
     setState(() {
       imageID = "";
       isDone = false;
@@ -627,7 +628,8 @@ class _PreviewState extends State<Preview> {
           contentType: MediaType('image', 'jpeg'),
         ),*/
         await http.MultipartFile.fromBytes(
-          'file',
+          //'file',
+          'image_file',
           //_imageBytes!.buffer.asUint8List(),
           getCropImage(),
           filename: 'photo.jpg',
@@ -642,31 +644,31 @@ class _PreviewState extends State<Preview> {
       print("json result");
       final responseJson = json.decode(respStr);
       print(responseJson);
-      var detectionResultResponse =
-          DetectionResultResponse.fromJson(responseJson);
+      var detectionResult = DetectionResult.fromJson(responseJson);
 
-      if (detectionResultResponse.status == 1) {
-        //final imageDetails = responseJson["message"];
+      //if (detectionResultResponse.status == 1) {
+      //final imageDetails = responseJson["message"];
 
-        var id = detectionResultResponse.message!.imageID!;
-        setState(() {
-          imageID = id;
-          fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
-        });
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Result(
-                    detectionResult: detectionResultResponse.message!,
-                  )),
-        );
+      //var id = detectionResultResponse.message!.imageID!;
+      var id = detectionResult.imageID!;
+      setState(() {
+        imageID = id;
+        fileurl = "${Config.DETECTOR_API_IMAGE_BASE_URL}/$id.jpg";
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Result(
+                  detectionResult: detectionResult,
+                )),
+      );
 
-        //print("imageID $imageID");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseJson["message"]),
-        ));
-      }
+      //print("imageID $imageID");
+      //} else {
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //content: Text(responseJson["message"]),
+      //));
+      //}
     } catch (ex) {
       print(ex);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

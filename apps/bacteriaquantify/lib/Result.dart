@@ -1,5 +1,6 @@
 import 'package:bacteriaquantify/SampleHistory.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
+import 'package:bacteriaquantify/services/PDFService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/style.dart';
@@ -28,7 +29,7 @@ class _ResultState extends State<Result> {
     super.initState();
     setState(() {
       imageURL =
-          "${Config.API_HOST}/userImages/${widget.detectionResult.imageID!}.jpg";
+          "${Config.DETECTOR_API_IMAGE_BASE_URL}/${widget.detectionResult.imageID!}.jpg";
     });
   }
 
@@ -233,12 +234,24 @@ class _ResultState extends State<Result> {
                                         child: BigRoundIconButton(
                                           onTap: () async {
                                             print("Share");
+                                            if (sampleNameController.text ==
+                                                "") {
+                                              print('t3');
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    "Please enter sample name"),
+                                              ));
+                                            } else {
+                                              share();
+                                            }
                                           },
                                           icon: AssetImage(
                                               "assets/share_24px.png"),
                                         )),
                                     Container(
-                                        width: 200,
+                                        padding: EdgeInsets.only(
+                                            left: 20, right: 20),
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
                                               print("Save");
@@ -278,6 +291,22 @@ class _ResultState extends State<Result> {
                 ]))
       ]),
     ));
+  }
+
+  share() async {
+    print('share;');
+    setState(() {
+      isLoading = true;
+    });
+    print("generate pdf");
+    //try {
+
+    await PDFService(context: context).share(
+        sampleNameController.text, imageURL, widget.detectionResult.bacteries!);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   saveResult() async {

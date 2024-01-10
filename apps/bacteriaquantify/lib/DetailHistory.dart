@@ -7,13 +7,10 @@ import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+
 import 'Config.dart';
 import 'dart:io';
-import 'package:document_file_save_plus/document_file_save_plus.dart' as dfs;
 
-import 'package:path/path.dart' as Path;
-import 'package:path_provider/path_provider.dart';
 import 'SampleHistory.dart';
 import 'models/Bacteries.dart';
 import 'models/History.dart';
@@ -38,7 +35,7 @@ class _DetailHistoryState extends State<DetailHistory> {
     super.initState();
     setState(() {
       imageURL =
-          "${Config.API_HOST}/userImages/${widget.history.localFileImage!}.jpg";
+          "${Config.DETECTOR_API_IMAGE_BASE_URL}/${widget.history.localFileImage!}.jpg";
     });
 
     ConnectionService(context: context).check().then((res) {
@@ -265,12 +262,6 @@ class _DetailHistoryState extends State<DetailHistory> {
     ));
   }
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
-  }
-
   share() async {
     print('share;');
     setState(() {
@@ -278,31 +269,9 @@ class _DetailHistoryState extends State<DetailHistory> {
     });
     print("generate pdf");
     //try {
-    //https://stackoverflow.com/questions/54379206/flutter-create-directory-on-external-storage-path-path-provider-getexternals
-    var pdfBytes = await PDFService(context: context)
-        .generateShareResult(widget.history.sampleName!, imageURL, bacteries);
-    //print("get external dir");
-    //final directory = await getExternalStorageDirectory();
-    final directory = await _localPath;
 
-    print("create file");
-    final fname = "example.pdf";
-    final fpath = "${directory}/${fname}";
-    final file = File(fpath);
-    print("write");
-    await file.writeAsBytes(pdfBytes.toList());
-    print("save");
-    //dfs.DocumentFileSavePlus().saveFile(pdfBytes, fname, "application/pdf");
-    print("share");
-    final result =
-        await Share.shareXFiles([XFile(fpath)], text: 'Great picture');
-
-    if (result.status == ShareResultStatus.success) {
-      print('Thank you for sharing the picture!');
-    }
-    //} catch (ex) {
-    //print(ex);
-    //}
+    await PDFService(context: context)
+        .share(widget.history.sampleName!, imageURL, bacteries);
 
     setState(() {
       isLoading = false;
