@@ -59,8 +59,12 @@ class _ResultState extends State<Result> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -79,8 +83,12 @@ class _ResultState extends State<Result> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,

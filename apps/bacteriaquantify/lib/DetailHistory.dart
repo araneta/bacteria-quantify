@@ -1,12 +1,19 @@
 import 'package:bacteriaquantify/services/ConnectionService.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
+import 'package:bacteriaquantify/services/PDFService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'Config.dart';
+import 'dart:io';
+import 'package:document_file_save_plus/document_file_save_plus.dart' as dfs;
+
+import 'package:path/path.dart' as Path;
+import 'package:path_provider/path_provider.dart';
 import 'SampleHistory.dart';
 import 'models/Bacteries.dart';
 import 'models/History.dart';
@@ -85,7 +92,8 @@ class _DetailHistoryState extends State<DetailHistory> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SampleHistory()),
+                                        builder: (context) =>
+                                            const SampleHistory()),
                                   );
                                 }, // Image tapped
                                 child: const Image(
@@ -105,8 +113,12 @@ class _DetailHistoryState extends State<DetailHistory> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -235,6 +247,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
                                               print("share");
+                                              share();
                                             },
                                             icon: AssetImage(
                                                 "assets/share_24px.png"),
@@ -250,5 +263,49 @@ class _DetailHistoryState extends State<DetailHistory> {
                 ]))
       ]),
     ));
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  share() async {
+    print('share;');
+    setState(() {
+      isLoading = true;
+    });
+    print("generate pdf");
+    //try {
+    //https://stackoverflow.com/questions/54379206/flutter-create-directory-on-external-storage-path-path-provider-getexternals
+    var pdfBytes = await PDFService(context: context)
+        .generateShareResult(widget.history.sampleName!, imageURL, bacteries);
+    //print("get external dir");
+    //final directory = await getExternalStorageDirectory();
+    final directory = await _localPath;
+
+    print("create file");
+    final fname = "example.pdf";
+    final fpath = "${directory}/${fname}";
+    final file = File(fpath);
+    print("write");
+    await file.writeAsBytes(pdfBytes.toList());
+    print("save");
+    //dfs.DocumentFileSavePlus().saveFile(pdfBytes, fname, "application/pdf");
+    print("share");
+    final result =
+        await Share.shareXFiles([XFile(fpath)], text: 'Great picture');
+
+    if (result.status == ShareResultStatus.success) {
+      print('Thank you for sharing the picture!');
+    }
+    //} catch (ex) {
+    //print(ex);
+    //}
+
+    setState(() {
+      isLoading = false;
+    });
   }
 }

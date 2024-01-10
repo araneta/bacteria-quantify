@@ -7,17 +7,13 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:bacteriaquantify/Dashboard.dart';
-
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-
 //import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
 import 'package:extended_image/extended_image.dart';
-
 import 'package:bacteriaquantify/utils/MultipartRequest.dart';
-import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
 import 'Result.dart';
 import 'models/User.dart';
@@ -118,8 +114,12 @@ class _PreviewState extends State<Preview> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -272,7 +272,12 @@ class _PreviewState extends State<Preview> {
 
                                       if (isDone) {
                                         print("calculatex1");
-                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Dashboard()),
+                                        );
                                       } else {
                                         print("calculatex2");
                                         if (!isButtonDisabled) {
@@ -281,7 +286,14 @@ class _PreviewState extends State<Preview> {
                                         }
                                       }
                                     },
-                                    title: "Calculate"))
+                                    title: isDone
+                                        ? "Done"
+                                        : (isButtonDisabled &&
+                                                localFileURL != ""
+                                            ? (_progressPercentValue == 100
+                                                ? "Calculating..."
+                                                : "Uploading: ${_progressPercentValue}%")
+                                            : "Calculate")))
                           ])),
                 ]))
       ]),
@@ -323,11 +335,13 @@ class _PreviewState extends State<Preview> {
   Future<void> _pick(int source) async {
     print("pick1");
     final XFile? result = await ImagePicker().pickImage(
+      maxHeight: 600,
+      maxWidth: 900,
       source: source == 1 ? ImageSource.camera : ImageSource.gallery,
     );
     print("pick2");
     if (result == null) {
-      showToast('The pick file is null');
+      print('The pick file is null');
       return;
     }
     print("pick3");
@@ -339,7 +353,7 @@ class _PreviewState extends State<Preview> {
     print("pick5");
     provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
     Uint8List bytes = file.readAsBytesSync();
-    ByteBuffer buffer = bytes.buffer;
+
     //print(bytes);
 
     setState(() {
@@ -448,20 +462,21 @@ class _PreviewState extends State<Preview> {
     print("uuh");
     final ExtendedImageEditorState? state = editorKey.currentState;
     if (state == null) {
-      return null;
+      //return null;
+      return _imageBytes;
     }
     final Rect? rect = state.getCropRect();
     if (rect == null) {
       print('The crop rect is null.');
-      return null;
+      return _imageBytes;
     }
     final EditActionDetails action = state.editAction!;
     // final img = await getImageFromEditorKey(editorKey);
     final Uint8List? img = state.rawImageData;
 
     if (img == null) {
-      showToast('The img is null.');
-      return null;
+      print('The img is null.');
+      return _imageBytes;
     }
 
     print("uuh1");
@@ -578,10 +593,6 @@ class _PreviewState extends State<Preview> {
   }
 
   uploadImageWithHttp() async {
-    final ExtendedImageEditorState? state = editorKey.currentState;
-    if (state == null) {
-      return;
-    }
     print("uploadImageWithHttp");
     User user = UserPreferences.getUser();
     final url = '${Config.API_HOST}/api/upload-detect';
