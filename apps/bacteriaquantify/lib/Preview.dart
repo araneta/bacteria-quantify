@@ -1,30 +1,25 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:bacteriaquantify/models/DetectionResultResponse.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:image/image.dart' as imgLib;
-
-import 'package:path/path.dart' as Path;
-import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:bacteriaquantify/Dashboard.dart';
-import 'package:bacteriaquantify/services/UserService.dart';
+
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
-import 'package:flutter/material.dart';
-import 'package:image_editor/image_editor.dart' hide ImageSource;
+
+//import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:bacteriaquantify/utils/Media.dart';
+
 import 'package:bacteriaquantify/utils/MultipartRequest.dart';
 import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
 import 'Result.dart';
-import 'auth_screen.dart';
-import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
 class Preview extends StatefulWidget {
@@ -385,57 +380,68 @@ class _PreviewState extends State<Preview> {
   }
 
   Widget _buildSat() {
-    return Slider(
-      label: 'sat : ${sat.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        //print(value);
-        setState(() {
-          sat = value;
-        });
-      },
-      onChangeEnd: (double newValue) {
-        changeBCS(3, newValue);
-      },
-      value: sat,
-      min: -2,
-      max: 4,
-    );
+    return Column(children: [
+      const Text("Saturation"),
+      Slider(
+        label: 'sat : ${sat.toStringAsFixed(2)}',
+        onChanged: (double value) {
+          //print(value);
+          setState(() {
+            sat = value;
+          });
+        },
+        onChangeEnd: (double newValue) {
+          changeBCS(3, newValue);
+        },
+        value: sat,
+        min: -2,
+        max: 4,
+      )
+    ]);
   }
 
   Widget _buildBrightness() {
-    return Slider(
-      label: 'brightness : ${bright.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        //print(value);
-        setState(() {
-          bright = value;
-        });
-      },
-      onChangeEnd: (double newValue) {
-        changeBCS(1, newValue);
-      },
-      value: bright,
-      min: 0,
-      max: 2,
+    return Column(
+      children: [
+        const Text("Brightness"),
+        Slider(
+          label: 'brightness : ${bright.toStringAsFixed(2)}',
+          onChanged: (double value) {
+            //print(value);
+            setState(() {
+              bright = value;
+            });
+          },
+          onChangeEnd: (double newValue) {
+            changeBCS(1, newValue);
+          },
+          value: bright,
+          min: 0,
+          max: 2,
+        )
+      ],
     );
   }
 
   Widget _buildCon() {
-    return Slider(
-      label: 'con : ${con.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        //print(value);
-        setState(() {
-          con = value;
-        });
-      },
-      onChangeEnd: (double newValue) {
-        changeBCS(2, newValue);
-      },
-      value: con,
-      min: 0,
-      max: 200,
-    );
+    return Column(children: [
+      const Text("Contrast"),
+      Slider(
+        label: 'con : ${con.toStringAsFixed(2)}',
+        onChanged: (double value) {
+          //print(value);
+          setState(() {
+            con = value;
+          });
+        },
+        onChangeEnd: (double newValue) {
+          changeBCS(2, newValue);
+        },
+        value: con,
+        min: 0,
+        max: 200,
+      )
+    ]);
   }
 
   getCropImage() {
