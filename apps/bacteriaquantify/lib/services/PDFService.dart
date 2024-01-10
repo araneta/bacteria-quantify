@@ -33,7 +33,7 @@ class PDFService {
     final directory = await _localPath;
 
     print("create file");
-    final fname = "example.pdf";
+    final fname = "$sampleName.pdf";
     final fpath = "${directory}/${fname}";
     final file = File(fpath);
     print("write");
@@ -41,8 +41,7 @@ class PDFService {
     print("save");
     //dfs.DocumentFileSavePlus().saveFile(pdfBytes, fname, "application/pdf");
     print("share");
-    final result =
-        await Share.shareXFiles([XFile(fpath)], text: 'Great picture');
+    final result = await Share.shareXFiles([XFile(fpath)], text: sampleName);
 
     if (result.status == ShareResultStatus.success) {
       print('Thank you for sharing the picture!');
@@ -64,9 +63,14 @@ class PDFService {
       pw.Page(
         build: (pw.Context context) => pw.Column(children: [
           pw.Center(
-            child: pw.Text(sampleName),
+            child: pw.Text(
+              sampleName,
+              style: pw.Theme.of(context).header1,
+            ),
           ),
+          pw.SizedBox(height: 20),
           pw.Image(pw.MemoryImage(data)),
+          pw.SizedBox(height: 20),
           pw.Table(
               border: pw.TableBorder.all(color: PdfColors.black),
               children: [
@@ -79,7 +83,7 @@ class PDFService {
                         style: pw.Theme.of(context).header4,
                         textAlign: pw.TextAlign.center,
                       ),
-                      padding: pw.EdgeInsets.all(20),
+                      padding: pw.EdgeInsets.all(10),
                     ),
                     pw.Padding(
                       child: pw.Text(
@@ -87,7 +91,7 @@ class PDFService {
                         style: pw.Theme.of(context).header4,
                         textAlign: pw.TextAlign.center,
                       ),
-                      padding: pw.EdgeInsets.all(20),
+                      padding: pw.EdgeInsets.all(10),
                     ),
                   ],
                 ),
@@ -97,13 +101,13 @@ class PDFService {
                           // We can use an Expanded widget, and use the flex parameter to specify
                           // how wide this particular widget should be. With a flex parameter of
                           // 2, the description widget will be 66% of the available width.
-                          pw.Expanded(
+                          pw.Padding(
                             child: pw.Text(e.species!),
-                            flex: 2,
+                            padding: pw.EdgeInsets.all(10),
                           ),
-                          pw.Expanded(
+                          pw.Padding(
                             child: pw.Text(e.totalColony.toString()),
-                            flex: 2,
+                            padding: pw.EdgeInsets.all(10),
                           ),
                         ]))
               ])
