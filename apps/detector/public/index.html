@@ -58,7 +58,7 @@
 				<h3>Result</h3>
 				<p><img src="" id="imgres" class="img-responsive" ></p>
 				<h4 id="algaetype"></h4>
-				<table class="table table-bordered table-hover table-striped">
+				<table class="table table-bordered table-hover table-striped" id="tableID">
 					<thead>
 						<tr>
 							<th>Species</th>
@@ -95,9 +95,11 @@
 			   //draw_image_and_boxes(event.target.files[0],boxes);
 			   $('#imgori').attr('src',URL.createObjectURL(event.target.files[0]));
 			   $('#imgres').attr('src',imgresult);
-			   if(result.result){
+			   if(result){
+				   var tbody = $("#tableID").find('tbody');
 				   result.bacteries.forEach((item)=>{
 					   console.log(item);
+					   tbody.append($('<tr><td>'+item.species+'</td><td>'+item.totalColony+'</td></tr>')	);
 				   });
 			   }
 		   })
