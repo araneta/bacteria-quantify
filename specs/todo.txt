@@ -2,7 +2,45 @@
 2. register [done]
 3. lupa password [done]
 4. dashboard [done]
-5. take photo
-6. insert photo
-7. list history
-8. detail history
+5. take photo [done]
+6. insert photo [done]
+7. list history [done]
+8. detail history [done]
+9. contrast, brightness, saturation
+10. pdf
+11. share
+11. live site
+i want to use existing ExtendedImage. here my code, i don't know how to update cstate.rawImageData 
+
+```
+void changeSaturation(double val) async {
+    final ExtendedImageEditorState? cstate = editorKey.currentState;
+    if (cstate == null) {
+      return;
+    }
+
+    // final img = await getImageFromEditorKey(editorKey);
+    final Uint8List? img = cstate.rawImageData;
+
+    if (img == null) {
+      showToast('The img is null.');
+      return;
+    }
+
+    final ImageEditorOption option = ImageEditorOption();
+    option.addOption(ColorOption.saturation(val));
+    option.outputFormat = const OutputFormat.png(88);
+
+    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
+
+    final DateTime start = DateTime.now();
+    final Uint8List? result = await ImageEditor.editImage(
+      image: img,
+      imageEditorOption: option,
+    );
+
+    print('result.length = ${result?.length}');
+    //how to do this
+    cstate.rawImageData = result;
+  }
+```

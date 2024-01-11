@@ -1,28 +1,21 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:bacteriaquantify/models/DetectionResultResponse.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-
-import 'package:path/path.dart' as Path;
-import 'dart:typed_data';
+import 'package:image/image.dart' as imgLib;
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:bacteriaquantify/Dashboard.dart';
-import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundButton.dart';
-import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
-import 'package:flutter/material.dart';
-import 'package:image_editor/image_editor.dart' hide ImageSource;
+//import 'package:image_editor/image_editor.dart' hide ImageSource;
 import 'package:image_picker/image_picker.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:bacteriaquantify/utils/Media.dart';
 import 'package:bacteriaquantify/utils/MultipartRequest.dart';
-import 'package:oktoast/oktoast.dart';
 import 'Config.dart';
 import 'Result.dart';
-import 'auth_screen.dart';
 import 'models/DetectionResult.dart';
 import 'models/User.dart';
 
@@ -54,10 +47,19 @@ class _PreviewState extends State<Preview> {
   String localFileURL = "";
   //return from server
   String fileurl = "";
+  Uint8List? bytes;
+  double sat = 1;
+  double bright = 1;
+  double con = 100;
+  imgLib.Image? _image;
+  Uint8List? _imageBytes;
+  bool isEditImage = false;
 
   @override
   void initState() {
     super.initState();
+    _image = imgLib.Image(width: 250, height: 250);
+    _imageBytes = imgLib.encodeJpg(_image!);
 
     _pick(widget.source);
   }
@@ -113,8 +115,12 @@ class _PreviewState extends State<Preview> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -140,15 +146,23 @@ class _PreviewState extends State<Preview> {
                         ),*/
                             buildImage(),
                             const SizedBox(height: 24),
-                            Column(
-                              children: <Widget>[
-                                showBrightness
-                                    ? _buildBrightness()
-                                    : const SizedBox(),
-                                showContrast ? _buildCon() : const SizedBox(),
-                                showSaturation ? _buildSat() : const SizedBox(),
-                              ],
-                            ),
+                            SliderTheme(
+                                data: SliderThemeData(
+                                    showValueIndicator:
+                                        ShowValueIndicator.onlyForContinuous),
+                                child: Column(
+                                  children: <Widget>[
+                                    showBrightness
+                                        ? _buildBrightness()
+                                        : const SizedBox(),
+                                    showContrast
+                                        ? _buildCon()
+                                        : const SizedBox(),
+                                    showSaturation
+                                        ? _buildSat()
+                                        : const SizedBox(),
+                                  ],
+                                )),
                             Container(
                               //width: size!.width * 0.8,
                               padding: const EdgeInsets.only(
@@ -238,7 +252,7 @@ class _PreviewState extends State<Preview> {
                                   GestureDetector(
                                     onTap: () async {
                                       print('crop');
-                                      await crop();
+                                      crop();
                                     }, // Image tapped
                                     child: const Image(
                                         width: 30,
@@ -259,7 +273,12 @@ class _PreviewState extends State<Preview> {
 
                                       if (isDone) {
                                         print("calculatex1");
-                                        Navigator.of(context).pop();
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Dashboard()),
+                                        );
                                       } else {
                                         print("calculatex2");
                                         if (!isButtonDisabled) {
@@ -268,7 +287,14 @@ class _PreviewState extends State<Preview> {
                                         }
                                       }
                                     },
-                                    title: "Calculate"))
+                                    title: isDone
+                                        ? "Done"
+                                        : (isButtonDisabled &&
+                                                localFileURL != ""
+                                            ? (_progressPercentValue == 100
+                                                ? "Calculating..."
+                                                : "Uploading: ${_progressPercentValue}%")
+                                            : "Calculate")))
                           ])),
                 ]))
       ]),
@@ -276,6 +302,21 @@ class _PreviewState extends State<Preview> {
   }
 
   Widget buildImage() {
+    return ExtendedImage.memory(
+      _imageBytes!,
+      height: 320,
+      width: 320,
+      extendedImageEditorKey: editorKey,
+      //mode: ExtendedImageMode.editor,
+      mode: isEditImage ? ExtendedImageMode.editor : ExtendedImageMode.none,
+      fit: BoxFit.contain,
+      initEditorConfigHandler: (_) => EditorConfig(
+        maxScale: 8.0,
+        //cropRectPadding: const EdgeInsets.all(20.0),
+        hitTestSize: 20.0,
+        //cropAspectRatio: 2 / 1,
+      ),
+    );
     return ExtendedImage(
       image: provider,
       height: 320,
@@ -295,11 +336,13 @@ class _PreviewState extends State<Preview> {
   Future<void> _pick(int source) async {
     print("pick1");
     final XFile? result = await ImagePicker().pickImage(
+      maxHeight: 600,
+      maxWidth: 900,
       source: source == 1 ? ImageSource.camera : ImageSource.gallery,
     );
     print("pick2");
     if (result == null) {
-      showToast('The pick file is null');
+      print('The pick file is null');
       return;
     }
     print("pick3");
@@ -307,160 +350,204 @@ class _PreviewState extends State<Preview> {
     dynamic file = File(result.path);
     print("pick4");
     provider = FileImage(file);
+
     print("pick5");
     provider = ExtendedFileImageProvider(File(result.path), cacheRawData: true);
+    Uint8List bytes = file.readAsBytesSync();
+
+    //print(bytes);
+
     setState(() {
       isButtonDisabled = false;
       localFileURL = result.path;
+      //
+      _imageBytes = bytes;
+      _image = imgLib.decodeImage(bytes);
     });
   }
 
-  double sat = 1;
-  double bright = 1;
-  double con = 1;
-
-  void changeSaturation(double val) async {
-    final ExtendedImageEditorState? cstate = editorKey.currentState;
-    if (cstate == null) {
-      return;
-    }
+  void changeBCS(int mode, double val) async {
+    print("changeSaturation");
 
     // final img = await getImageFromEditorKey(editorKey);
-    final Uint8List? img = cstate.rawImageData;
+    //https://cbtdev.net/dart-image-library/
+    try {
+      var image = _image!.clone();
+      print(mode);
+      print(val);
+      if (mode == 2) {
+        image = imgLib.contrast(image!, contrast: val);
+      } else if (mode == 1) {
+        image = imgLib.adjustColor(image!, brightness: val);
+      } else if (mode == 3) {
+        image = imgLib.adjustColor(image!, saturation: val);
+      }
 
-    if (img == null) {
-      showToast('The img is null.');
-      return;
+      print("xx5");
+      setState(() {
+        _imageBytes = imgLib.encodeJpg(image);
+        //_image = image;
+      });
+      print("xx7");
+    } catch (ex) {
+      print(ex);
     }
-
-    final ImageEditorOption option = ImageEditorOption();
-    option.addOption(ColorOption.saturation(val));
-    option.outputFormat = const OutputFormat.png(88);
-
-    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
-
-    final DateTime start = DateTime.now();
-    final Uint8List? result = await ImageEditor.editImage(
-      image: img,
-      imageEditorOption: option,
-    );
-
-    print('result.length = ${result?.length}');
   }
 
   Widget _buildSat() {
-    return Slider(
-      label: 'sat : ${sat.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        print(value);
-        setState(() {
-          sat = value;
-        });
-        crop(true);
-      },
-      value: sat,
-      min: 0,
-      max: 2,
-    );
+    return Column(children: [
+      const Text("Saturation"),
+      Slider(
+        label: 'sat : ${sat.toStringAsFixed(2)}',
+        onChanged: (double value) {
+          //print(value);
+          setState(() {
+            sat = value;
+          });
+        },
+        onChangeEnd: (double newValue) {
+          changeBCS(3, newValue);
+        },
+        value: sat,
+        min: -2,
+        max: 4,
+      )
+    ]);
   }
 
   Widget _buildBrightness() {
-    return Slider(
-      label: 'brightness : ${bright.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        print(value);
-        setState(() {
-          bright = value;
-        });
-        crop(true);
-      },
-      value: bright,
-      min: 0,
-      max: 2,
+    return Column(
+      children: [
+        const Text("Brightness"),
+        Slider(
+          label: 'brightness : ${bright.toStringAsFixed(2)}',
+          onChanged: (double value) {
+            //print(value);
+            setState(() {
+              bright = value;
+            });
+          },
+          onChangeEnd: (double newValue) {
+            changeBCS(1, newValue);
+          },
+          value: bright,
+          min: 0,
+          max: 2,
+        )
+      ],
     );
   }
 
   Widget _buildCon() {
-    return Slider(
-      label: 'con : ${con.toStringAsFixed(2)}',
-      onChanged: (double value) {
-        print(value);
-        setState(() {
-          con = value;
-        });
-        crop(true);
-      },
-      value: con,
-      min: 0,
-      max: 4,
-    );
+    return Column(children: [
+      const Text("Contrast"),
+      Slider(
+        label: 'con : ${con.toStringAsFixed(2)}',
+        onChanged: (double value) {
+          //print(value);
+          setState(() {
+            con = value;
+          });
+        },
+        onChangeEnd: (double newValue) {
+          changeBCS(2, newValue);
+        },
+        value: con,
+        min: 0,
+        max: 200,
+      )
+    ]);
   }
 
-  Future<void> crop([bool test = false]) async {
+  getCropImage() {
+    print("uuh");
     final ExtendedImageEditorState? state = editorKey.currentState;
     if (state == null) {
-      return;
+      //return null;
+      return _imageBytes;
     }
     final Rect? rect = state.getCropRect();
     if (rect == null) {
-      showToast('The crop rect is null.');
-      return;
+      print('The crop rect is null.');
+      return _imageBytes;
     }
     final EditActionDetails action = state.editAction!;
-    final double radian = action.rotateAngle;
-
-    final bool flipHorizontal = action.flipY;
-    final bool flipVertical = action.flipX;
     // final img = await getImageFromEditorKey(editorKey);
     final Uint8List? img = state.rawImageData;
 
     if (img == null) {
-      showToast('The img is null.');
-      return;
+      print('The img is null.');
+      return _imageBytes;
     }
 
-    final ImageEditorOption option = ImageEditorOption();
-
-    option.addOption(ClipOption.fromRect(rect));
-    option.addOption(
-        FlipOption(horizontal: flipHorizontal, vertical: flipVertical));
-    if (action.hasRotateAngle) {
-      option.addOption(RotateOption(radian.toInt()));
-    }
-
-    option.addOption(ColorOption.saturation(sat));
-    option.addOption(ColorOption.brightness(bright));
-    option.addOption(ColorOption.contrast(con));
-
-    option.outputFormat = const OutputFormat.png(88);
-
-    print(const JsonEncoder.withIndent('  ').convert(option.toJson()));
-
+    print("uuh1");
     final DateTime start = DateTime.now();
-    final Uint8List? result = await ImageEditor.editImage(
-      image: img,
-      imageEditorOption: option,
-    );
+    print("uuh2");
+    try {
+      /*
+      final Uint8List? result = await ImageEditor.editImage(
+        image: img,
+        imageEditorOption: option,
+      );*/
+      if (action.needCrop) {
+        //var image = _image!.clone();
+        final image = imgLib.decodeJpg(img);
 
-    print('result.length = ${result?.length}');
+        var result = imgLib.copyCrop(image!,
+            x: rect.left.toInt(),
+            y: rect.top.toInt(),
+            width: rect.width.toInt(),
+            height: rect.height.toInt());
 
-    final Duration diff = DateTime.now().difference(start);
+        print("uuh3");
+        print('result.length = ${result?.length}');
 
-    print('image_editor time : $diff');
-    showToast('handle duration: $diff',
-        duration: const Duration(seconds: 5), dismissOtherToast: true);
-
-    if (result == null) return;
-
-    showPreviewDialog(result);
+        print("uuh4");
+        if (result == null) return null;
+        print("uuh5");
+        /*setState(() {
+          //_image = result;
+          _imageBytes = imgLib.encodeJpg(result!);
+        });
+        print("uuh6");
+        showPreviewDialog(_imageBytes!);*/
+        return imgLib.encodeJpg(result!);
+      } else {
+        return _imageBytes;
+      }
+    } catch (ex) {
+      print(ex);
+    }
+    return null;
   }
 
-  void flip() {
+  void flip() async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+      await new Future.delayed(const Duration(seconds: 1));
+    }
+
     editorKey.currentState?.flip();
   }
 
-  void rotate(bool right) {
+  void rotate(bool right) async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+      await new Future.delayed(const Duration(seconds: 1));
+    }
     editorKey.currentState?.rotate(right: right);
+  }
+
+  void crop() async {
+    if (!isEditImage) {
+      setState(() {
+        isEditImage = true;
+      });
+    }
   }
 
   void showPreviewDialog(Uint8List image) {
@@ -509,7 +596,7 @@ class _PreviewState extends State<Preview> {
   uploadImageWithHttp() async {
     print("uploadImageWithHttp");
     User user = UserPreferences.getUser();
-    final url = '${Config.API_HOST}/api/upload-detect';
+    final url = Config.DETECTOR_API_URL;
     setState(() {
       imageID = "";
       isDone = false;
@@ -533,10 +620,19 @@ class _PreviewState extends State<Preview> {
       request.headers['Authorization'] = "Bearer ${user.token}";
       request.fields['form_key'] = 'form_value';
       print("uploadImageWithHttp");
+
       request.files.add(
-        await http.MultipartFile.fromPath(
+        /*await http.MultipartFile.fromPath(
           'file',
           localFileURL,
+          contentType: MediaType('image', 'jpeg'),
+        ),*/
+        await http.MultipartFile.fromBytes(
+          //'file',
+          'image_file',
+          //_imageBytes!.buffer.asUint8List(),
+          getCropImage(),
+          filename: 'photo.jpg',
           contentType: MediaType('image', 'jpeg'),
         ),
       );
@@ -548,31 +644,31 @@ class _PreviewState extends State<Preview> {
       print("json result");
       final responseJson = json.decode(respStr);
       print(responseJson);
-      var detectionResultResponse =
-          DetectionResultResponse.fromJson(responseJson);
+      var detectionResult = DetectionResult.fromJson(responseJson);
 
-      if (detectionResultResponse.status == 1) {
-        //final imageDetails = responseJson["message"];
+      //if (detectionResultResponse.status == 1) {
+      //final imageDetails = responseJson["message"];
 
-        var id = detectionResultResponse.message!.imageID!;
-        setState(() {
-          imageID = id;
-          fileurl = Config.API_HOST + "/userImages/" + id + ".out.jpg";
-        });
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Result(
-                    detectionResult: detectionResultResponse.message!,
-                  )),
-        );
+      //var id = detectionResultResponse.message!.imageID!;
+      var id = detectionResult.imageID!;
+      setState(() {
+        imageID = id;
+        fileurl = "${Config.DETECTOR_API_IMAGE_BASE_URL}/$id.jpg";
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Result(
+                  detectionResult: detectionResult,
+                )),
+      );
 
-        //print("imageID $imageID");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(responseJson["message"]),
-        ));
-      }
+      //print("imageID $imageID");
+      //} else {
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //content: Text(responseJson["message"]),
+      //));
+      //}
     } catch (ex) {
       print(ex);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

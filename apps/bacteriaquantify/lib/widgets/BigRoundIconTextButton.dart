@@ -15,7 +15,7 @@ class BigRoundIconTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 325, // <-- Your width
+        //width: 225, // <-- Your width
         height: 53, // <-- Your height
         child: ElevatedButton(
           style: ButtonStyle(

@@ -1,5 +1,6 @@
 import 'package:bacteriaquantify/SampleHistory.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
+import 'package:bacteriaquantify/services/PDFService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/style.dart';
@@ -28,7 +29,7 @@ class _ResultState extends State<Result> {
     super.initState();
     setState(() {
       imageURL =
-          "${Config.API_HOST}/userImages/${widget.detectionResult.imageID!}.jpg";
+          "${Config.DETECTOR_API_IMAGE_BASE_URL}/${widget.detectionResult.imageID!}.jpg";
     });
   }
 
@@ -59,8 +60,12 @@ class _ResultState extends State<Result> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -79,8 +84,12 @@ class _ResultState extends State<Result> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -90,7 +99,7 @@ class _ResultState extends State<Result> {
                               ),
                             ])),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Container(
@@ -107,7 +116,9 @@ class _ResultState extends State<Result> {
                             Container(
                               alignment: Alignment.center, // use aligment
                               child: Image.network(imageURL,
-                                  height: 320, width: 320, fit: BoxFit.cover),
+                                  //height: 320,
+                                  width: size!.width * 0.8,
+                                  fit: BoxFit.cover),
                             ),
                             const SizedBox(height: 30),
                             Container(
@@ -116,7 +127,7 @@ class _ResultState extends State<Result> {
                               child: TextFormField(
                                 autocorrect: false,
                                 controller: sampleNameController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   fillColor: Color.fromRGBO(196, 231, 246, 1),
                                   filled: true,
                                   border: OutlineInputBorder(),
@@ -223,12 +234,24 @@ class _ResultState extends State<Result> {
                                         child: BigRoundIconButton(
                                           onTap: () async {
                                             print("Share");
+                                            if (sampleNameController.text ==
+                                                "") {
+                                              print('t3');
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    "Please enter sample name"),
+                                              ));
+                                            } else {
+                                              share();
+                                            }
                                           },
                                           icon: AssetImage(
                                               "assets/share_24px.png"),
                                         )),
                                     Container(
-                                        width: 200,
+                                        padding: EdgeInsets.only(
+                                            left: 20, right: 20),
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
                                               print("Save");
@@ -268,6 +291,22 @@ class _ResultState extends State<Result> {
                 ]))
       ]),
     ));
+  }
+
+  share() async {
+    print('share;');
+    setState(() {
+      isLoading = true;
+    });
+    print("generate pdf");
+    //try {
+
+    await PDFService(context: context).share(
+        sampleNameController.text, imageURL, widget.detectionResult.bacteries!);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   saveResult() async {

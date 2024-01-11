@@ -1,12 +1,16 @@
 import 'package:bacteriaquantify/services/ConnectionService.dart';
 import 'package:bacteriaquantify/services/HistoryService.dart';
+import 'package:bacteriaquantify/services/PDFService.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconButton.dart';
 import 'package:bacteriaquantify/Dashboard.dart';
 import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
+
 import 'Config.dart';
+import 'dart:io';
+
 import 'SampleHistory.dart';
 import 'models/Bacteries.dart';
 import 'models/History.dart';
@@ -31,7 +35,7 @@ class _DetailHistoryState extends State<DetailHistory> {
     super.initState();
     setState(() {
       imageURL =
-          "${Config.API_HOST}/userImages/${widget.history.localFileImage!}.jpg";
+          "${Config.DETECTOR_API_IMAGE_BASE_URL}/${widget.history.localFileImage!}.jpg";
     });
 
     ConnectionService(context: context).check().then((res) {
@@ -85,7 +89,8 @@ class _DetailHistoryState extends State<DetailHistory> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SampleHistory()),
+                                        builder: (context) =>
+                                            const SampleHistory()),
                                   );
                                 }, // Image tapped
                                 child: const Image(
@@ -105,8 +110,12 @@ class _DetailHistoryState extends State<DetailHistory> {
                                   )),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const Dashboard()));
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Dashboard()),
+                                  );
                                 }, // Image tapped
                                 child: const Image(
                                     width: 30,
@@ -133,7 +142,9 @@ class _DetailHistoryState extends State<DetailHistory> {
                             Container(
                               alignment: Alignment.center, // use aligment
                               child: Image.network(imageURL,
-                                  height: 320, width: 320, fit: BoxFit.cover),
+                                  //height: 320,
+                                  width: size!.width * 0.8,
+                                  fit: BoxFit.cover),
                             ),
                             const SizedBox(
                               height: 30,
@@ -233,6 +244,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                         child: BigRoundIconTextButton(
                                             onTap: () async {
                                               print("share");
+                                              share();
                                             },
                                             icon: AssetImage(
                                                 "assets/share_24px.png"),
@@ -248,5 +260,21 @@ class _DetailHistoryState extends State<DetailHistory> {
                 ]))
       ]),
     ));
+  }
+
+  share() async {
+    print('share;');
+    setState(() {
+      isLoading = true;
+    });
+    print("generate pdf");
+    //try {
+
+    await PDFService(context: context)
+        .share(widget.history.sampleName!, imageURL, bacteries);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 }
