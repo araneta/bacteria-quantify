@@ -78,7 +78,7 @@ def detect_objects_on_image(buf):
         for box, score, class_id in zip(boxes, scores, class_ids):
             if class_id==idx:
                 total = total + 1
-        item['total'] = total        
+        item['totalColony'] = total        
         detected.append(item)
         idx = idx + 1
         
@@ -88,8 +88,8 @@ def detect_objects_on_image(buf):
     guid = str(uuid.uuid4())
     outputfile = os.path.join(IMAGE_DIR,guid)+".jpg"
     cv2.imwrite(outputfile, combined_img)
-    d['result'] = detected
-    d['guid'] = guid
+    d['bacteries'] = detected
+    d['imageID'] = guid
     
     return d
 

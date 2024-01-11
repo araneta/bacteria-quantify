@@ -30,3 +30,6 @@ user from wwdata to mekavision
 
 test user:
 bejo@mailnesia.com ybifLBEmrE
+
+ source '/home/aldo/projects/algae/serv/algae/.env/bin/activate' 
+python3 server.py 
