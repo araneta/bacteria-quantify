@@ -54,3 +54,4 @@ pkg/
 *.onnx
 *.tflite
 apps/detector/public/images/
+.env/
