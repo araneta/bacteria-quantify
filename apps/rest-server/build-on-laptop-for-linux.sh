@@ -16,7 +16,7 @@ cd src
 #go build main.go
 
 #@build release linux 
-go build -ldflags "-s -w" -o "../../dist/surat"
+go build -ldflags "-s -w" -o "../../dist/bacteria-quantify"
 
 #@build release win
 #env GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o "../../dist/goder.exe"
