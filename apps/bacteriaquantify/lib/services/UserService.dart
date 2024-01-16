@@ -148,7 +148,6 @@ class UserService {
 
             UserPreferences.storeUser(userx);
             UserPreferences.setToken(jsonData['token']);
-            UserPreferences.setAPIURL(url);
 
             success = true;
           } else {

@@ -15,8 +15,8 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final nameCtr = TextEditingController();
-  final usernameCtr = TextEditingController(text: "bejo@mailnesia.com");
-  final passwordCtr = TextEditingController(text: "ybifLBEmrE");
+  final usernameCtr = TextEditingController();
+  final passwordCtr = TextEditingController();
   bool isLoading = false;
   String selectedAuth = "Masuk";
 
