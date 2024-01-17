@@ -106,7 +106,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
-                                        color: textBlue),
+                                        color: textBlack),
                                   )),
                               GestureDetector(
                                 onTap: () {
@@ -184,7 +184,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 15.0,
-                                              color: textBlue),
+                                              color: textBlack),
                                         ),
                                       ),
                                     ),
@@ -197,7 +197,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 15.0,
-                                              color: textBlue),
+                                              color: textBlack),
                                         ),
                                       ),
                                     ),
@@ -222,7 +222,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontSize: 15.0,
-                                                        color: textBlue)),
+                                                        color: textBlack)),
                                               ),
                                             ),
                                             Center(
@@ -237,7 +237,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontSize: 15.0,
-                                                        color: textBlue)),
+                                                        color: textBlack)),
                                               ),
                                             ),
                                           ]);

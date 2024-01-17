@@ -81,7 +81,7 @@ class _ResultState extends State<Result> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
-                                        color: textBlue),
+                                        color: textBlack),
                                   )),
                               GestureDetector(
                                 onTap: () {
@@ -176,7 +176,7 @@ class _ResultState extends State<Result> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 15.0,
-                                              color: textBlue),
+                                              color: textBlack),
                                         ),
                                       ),
                                     ),
@@ -189,7 +189,7 @@ class _ResultState extends State<Result> {
                                           style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 15.0,
-                                              color: textBlue),
+                                              color: textBlack),
                                         ),
                                       ),
                                     ),
@@ -217,7 +217,7 @@ class _ResultState extends State<Result> {
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontSize: 15.0,
-                                                        color: textBlue)),
+                                                        color: textBlack)),
                                               ),
                                             ),
                                             Center(
@@ -232,7 +232,7 @@ class _ResultState extends State<Result> {
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontSize: 15.0,
-                                                        color: textBlue)),
+                                                        color: textBlack)),
                                               ),
                                             ),
                                           ]);

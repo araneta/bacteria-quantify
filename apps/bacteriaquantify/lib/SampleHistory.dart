@@ -98,7 +98,7 @@ class _SampleHistoryState extends State<SampleHistory> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
-                                        color: textBlue),
+                                        color: textBlack),
                                   )),
                               GestureDetector(
                                 onTap: () {
