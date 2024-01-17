@@ -20,7 +20,7 @@ class HistoryService {
   getHistories() async {
     print("getHistories");
     var histories = <History>[];
-    var url = await UserPreferences.getAPIURL();
+    var url = Config.API_HOST;
     User user = UserPreferences.getUser();
     try {
       var response = await http.get(
@@ -59,7 +59,7 @@ class HistoryService {
   getDetailHistory(int historyID) async {
     print("getDetailHistory");
     var histories = <History>[];
-    var url = await UserPreferences.getAPIURL();
+    var url = Config.API_HOST;
     User user = UserPreferences.getUser();
     try {
       var response = await http.get(

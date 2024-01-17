@@ -6,7 +6,7 @@ import 'package:bacteriaquantify/models/User.dart';
 
 class UserPreferences {
   static SharedPreferences? _preferences;
-  static const keyAPIURL = 'APIURL';
+
   static User user = User(fullName: "", username: "", token: "");
   static const _keyToken = 'token';
   static const _keyUser = 'user';
@@ -35,19 +35,15 @@ class UserPreferences {
       Map<String, dynamic> decoded = jsonDecode(result);
       user = User.fromJson(decoded);
       user.isEmpty = false;
+    } else {
+      user.isEmpty = true;
+      user = User(fullName: "", username: "", token: "");
     }
     print("retrive user suck");
   }
 
   static User getUser() {
     return user;
-  }
-
-  static Future setAPIURL(String url) async =>
-      await _preferences?.setString(keyAPIURL, url);
-
-  static Future<String> getAPIURL() async {
-    return _preferences?.getString(keyAPIURL) ?? "";
   }
 
   static Future setToken(String token) async =>

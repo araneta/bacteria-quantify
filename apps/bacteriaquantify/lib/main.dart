@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
     User user = UserPreferences.getUser();
 
     return MaterialApp(
-      title: 'Bacteria Quantify',
+      title: 'Bacteria Count',
       theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Poppins'),
       home: user.isEmpty ? const MyHomePage() : const Dashboard(),
       debugShowCheckedModeBanner: false,
@@ -79,9 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: double.infinity,
               ),
               const Text(
-                'Bacteria\nQuantify!',
+                'Bacteria\nCount',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Color(0XFF4FA6CB),
+                    color: Color(0XFF2B8ACA),
                     fontSize: 32,
                     fontWeight: FontWeight.bold),
               )

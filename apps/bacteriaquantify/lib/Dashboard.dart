@@ -3,6 +3,7 @@ import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'About.dart';
 import 'Preview.dart';
 
 import 'SampleHistory.dart';
@@ -20,6 +21,15 @@ class _DashboardState extends State<Dashboard> {
   final usernameCtr = TextEditingController();
 
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    User user = UserPreferences.getUser();
+    if (user.isEmpty) {
+      logout();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +110,8 @@ class _DashboardState extends State<Dashboard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              'Bacteria\nQuantify!',
+                              'Bacteria Count',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: textBlue,
                                   fontSize: 24,
@@ -174,6 +185,23 @@ class _DashboardState extends State<Dashboard> {
                                       icon:
                                           AssetImage("assets/history_24px.png"),
                                       title: "History")),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                  padding:
+                                      EdgeInsets.only(bottom: 20.0, top: 4),
+                                  width: 190,
+                                  child: BigRoundIconTextButton(
+                                      onTap: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => About()),
+                                        );
+                                      },
+                                      icon: AssetImage("assets/info_light.png"),
+                                      title: "About")),
                             ],
                           ),
                         ),
@@ -186,7 +214,8 @@ class _DashboardState extends State<Dashboard> {
   logout() async {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
     sharedPref.clear();
-    sharedPref.commit();
+    UserPreferences.init();
+    //sharedPref.commit();
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (BuildContext context) => AuthScreen()),
         (Route<dynamic> route) => false);

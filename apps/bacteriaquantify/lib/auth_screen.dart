@@ -1,9 +1,12 @@
+import 'package:bacteriaquantify/About.dart';
 import 'package:bacteriaquantify/services/UserService.dart';
 import 'package:bacteriaquantify/style.dart';
+import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:flutter/material.dart';
 
 import 'Dashboard.dart';
 import 'ForgotPassword.dart';
+import 'models/User.dart';
 
 class AuthScreen extends StatefulWidget {
   String selectedAuth = "Masuk";
@@ -15,14 +18,23 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final nameCtr = TextEditingController();
-  final usernameCtr = TextEditingController(text: "bejo@mailnesia.com");
-  final passwordCtr = TextEditingController(text: "ybifLBEmrE");
+  final usernameCtr = TextEditingController();
+  final passwordCtr = TextEditingController();
   bool isLoading = false;
   String selectedAuth = "Masuk";
 
   @override
   void initState() {
     super.initState();
+    /*User user = UserPreferences.getUser();
+    if (!user.isEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Dashboard()),
+      );
+    } else {
+      
+    }*/
     setState(() => {selectedAuth = widget.selectedAuth});
   }
 
@@ -42,6 +54,9 @@ class _AuthScreenState extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -53,9 +68,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(width: 9),
                   const Text(
-                    'Bacteria\nQuantify!',
+                    'Bacteria\nCount',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: Color(0XFF4FA6CB),
+                        color: textBlue,
                         fontSize: 24,
                         fontWeight: FontWeight.bold),
                   )
@@ -101,7 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     'Masuk',
                                     style: TextStyle(
                                         fontSize: fontSizeNormal,
-                                        color: Color(0XFF4FA6CB)),
+                                        color: textBlue),
                                   ),
                                 )
                               ],
@@ -198,7 +214,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
-                          const Color(0XFF4FA6CB),
+                          textBlue,
                         ),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(19),
@@ -210,7 +226,29 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       child: Text(
                           selectedAuth == 'Masuk' ? selectedAuth : 'Buat Akun'),
-                    )
+                    ),
+                    SizedBox(height: 40),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => About()),
+                            );
+                          },
+                          child: Row(children: [
+                            Image(image: AssetImage("assets/info_dark.png")),
+                            Text(
+                              "About",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            )
+                          ]))
+                    ]),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -255,16 +293,12 @@ class _AuthScreenState extends State<AuthScreen> {
           padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(80),
-              color: selectedAuth == label
-                  ? const Color(0XFF4FA6CB)
-                  : Colors.white),
+              color: selectedAuth == label ? textBlue : Colors.white),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: selectedAuth != label
-                    ? const Color(0XFF4FA6CB)
-                    : Colors.white,
+                color: selectedAuth != label ? textBlue : Colors.white,
                 fontSize: fontSizeHeading1,
                 fontWeight: FontWeight.w600,
               ),

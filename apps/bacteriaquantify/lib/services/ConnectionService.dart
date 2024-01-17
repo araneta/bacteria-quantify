@@ -5,6 +5,8 @@ import 'package:bacteriaquantify/models/User.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../Config.dart';
+
 class ConnectionService {
   final BuildContext context;
 
@@ -33,7 +35,7 @@ class ConnectionService {
   }
 
   check() async {
-    var url = await UserPreferences.getAPIURL();
+    var url = Config.API_HOST;
     print("${url}/api/test");
     var response = await http.get(
       Uri.parse("${url}/api/test"),
