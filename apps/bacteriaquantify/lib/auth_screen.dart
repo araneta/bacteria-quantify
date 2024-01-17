@@ -221,7 +221,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         )),
                         padding: MaterialStateProperty.all(
                           const EdgeInsets.symmetric(
-                              horizontal: 42, vertical: 15),
+                              horizontal: 42, vertical: 8),
                         ),
                       ),
                       child: Text(

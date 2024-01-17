@@ -67,7 +67,7 @@ class _AboutState extends State<About> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
-                                        color: textBlue),
+                                        color: textBlack),
                                   )),
                               GestureDetector(
                                 onTap: () {

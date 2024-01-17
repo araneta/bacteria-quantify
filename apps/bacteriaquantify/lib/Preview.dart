@@ -111,7 +111,7 @@ class _PreviewState extends State<Preview> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 20.0,
-                                        color: textBlue),
+                                        color: textBlack),
                                   )),
                               GestureDetector(
                                 onTap: () {
