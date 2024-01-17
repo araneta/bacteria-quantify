@@ -7,7 +7,7 @@ import 'package:bacteriaquantify/style.dart';
 import 'package:bacteriaquantify/utils/UserPreferences.dart';
 import 'package:bacteriaquantify/widgets/BigRoundIconTextButton.dart';
 import 'package:flutter/material.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'Config.dart';
 import 'dart:io';
 
@@ -140,12 +140,33 @@ class _DetailHistoryState extends State<DetailHistory> {
                           child: buildImage(),
                         ),*/
                             Container(
-                              alignment: Alignment.center, // use aligment
-                              child: Image.network(imageURL,
+                                alignment: Alignment.center, // use aligment
+                                child: /*Image.network(imageURL,
                                   //height: 320,
                                   width: size!.width * 0.8,
                                   fit: BoxFit.cover),
-                            ),
+                            )*/
+                                    CachedNetworkImage(
+                                        progressIndicatorBuilder: (context, url,
+                                                progress) =>
+                                            Center(
+                                              child: CircularProgressIndicator(
+                                                value: progress.progress,
+                                              ),
+                                            ),
+                                        imageUrl: imageURL,
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                                  width: size!.width * 0.8,
+                                                  height: 240,
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ))),
                             const SizedBox(
                               height: 30,
                             ),
