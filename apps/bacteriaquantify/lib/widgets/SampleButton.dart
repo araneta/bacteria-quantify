@@ -26,7 +26,7 @@ class SampleButton extends StatelessWidget {
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)),
             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
             backgroundColor:
-                MaterialStateProperty.all<Color>(Color(0XFF4FA6CB)),
+                MaterialStateProperty.all<Color>(Color(0XFF2B8ACA)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),

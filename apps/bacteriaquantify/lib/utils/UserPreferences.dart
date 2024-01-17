@@ -35,6 +35,9 @@ class UserPreferences {
       Map<String, dynamic> decoded = jsonDecode(result);
       user = User.fromJson(decoded);
       user.isEmpty = false;
+    } else {
+      user.isEmpty = true;
+      user = User(fullName: "", username: "", token: "");
     }
     print("retrive user suck");
   }

@@ -43,9 +43,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ),
                   const SizedBox(width: 9),
                   const Text(
-                    'Bacteria\nQuantify!',
+                    'Bacteria\nCount',
                     style: TextStyle(
-                        color: Color(0XFF4FA6CB),
+                        color: textBlue,
                         fontSize: 24,
                         fontWeight: FontWeight.bold),
                   )
@@ -108,7 +108,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
-                          const Color(0XFF4FA6CB),
+                          textBlue,
                         ),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(19),
@@ -138,7 +138,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             'Masuk',
                             style: TextStyle(
                               fontSize: fontSizeBig,
-                              color: Color(0XFF4FA6CB),
+                              color: textBlue,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -157,7 +157,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             'Daftar',
                             style: TextStyle(
                               fontSize: fontSizeBig,
-                              color: Color(0XFF4FA6CB),
+                              color: textBlue,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
