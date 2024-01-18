@@ -96,7 +96,8 @@ class _DashboardState extends State<Dashboard> {
                     )),
               ),
               Container(
-                  padding: EdgeInsets.only(top: 80, bottom: 60.0),
+                  padding: EdgeInsets.only(top: 60, bottom: 60.0),
+                  height: MediaQuery.of(context).size.height - 90,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/bg.png'),
@@ -104,7 +105,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
