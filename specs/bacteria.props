@@ -1,5 +1,5 @@
 dsl=./dsl
-postgres=localhost/bacteria?user=bacteria&password=willamette
+postgres=localhost/bacteria?user=postgres&password=cZ8dfASM529gGvdY
 migration
 apply
 force

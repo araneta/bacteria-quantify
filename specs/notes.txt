@@ -14,11 +14,11 @@ run:
 cd /rest/src
 ../bin/wire
 
-CREATE DATABASE mekavision;
-CREATE USER mekavision WITH ENCRYPTED PASSWORD '1gDGGsn3v84056l';
-GRANT ALL PRIVILEGES ON DATABASE mekavision to mekavision;
+CREATE DATABASE bacteria;
+CREATE USER bacteria WITH ENCRYPTED PASSWORD 'willamette';
+GRANT ALL PRIVILEGES ON DATABASE bacteria to bacteria;
 
-psql -h localhost -p 5432 -U mekavision -d mekavision
+psql -h localhost -p 5432 -U bacteria -d bacteria
 ALTER USER postgres PASSWORD 'cZ8dfASM529gGvdY';
 ALTER USER mekavision PASSWORD '1gDGGsn3v84056l';
 
