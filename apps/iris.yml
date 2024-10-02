@@ -1,0 +1,28 @@
+Port: 8080
+# UserImagesPath: /media/aldo/49909430-d2bd-4bcf-be1d-3c425a4013bf/apps/projects/aifruit/apps/userImages
+UserImagesPath: /home/aldo/bacteria-quantify/apps/rest-server/public/userImages
+
+
+Databases:
+- DBHost: localhost
+  DBPort: 5432
+  DBUsername: postgres
+  DBPassword: cZ8dfASM529gGvdY
+  DBName: bacteria
+  DBSchema: bacteria
+- DBHost: localhost
+  DBPort: 5432
+  DBUsername: dsadas
+  DBPassword: dasdas
+  DBName: test
+  DBSchema: 
+
+
+TimeZone: Asia/Jakarta
+
+SMTPHost: smtp-relay.sendinblue.com
+SMTPPort: 587
+SMTPUsername: aldopraherda@gmail.com
+SMTPPassword: bxKLX3GYmr6gj72D
+
+PublicURL: http://192.168.1.13/
